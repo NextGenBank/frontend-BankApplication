@@ -13,7 +13,7 @@ export default {
 <template>
   <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
-      <RouterLink to="/" class="navbar-brand">Banking App</RouterLink>
+      <RouterLink to="/" class="navbar-brand">NextGenBank</RouterLink>
       <div class="navbar-nav ms-auto">
         <!-- <RouterLink class="nav-item nav-link" to="/article"
           >Add New Article</RouterLink

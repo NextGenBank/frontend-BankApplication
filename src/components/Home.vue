@@ -7,7 +7,7 @@ export default {
 </script>
 
 <template>
-  <h1>Welcome to the Banking App!</h1>
+  <h1>Welcome to NextGenBank!</h1>
   <!-- <ArticleTable /> --> 
 </template>
 
