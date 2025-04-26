@@ -24,8 +24,9 @@ export default {
             {{ store.readLaterCount }}
           </span>
         </RouterLink> -->
-        <RouterLink class="nav-item nav-link" to="/auth">Login/Register</RouterLink>
+        <RouterLink class="nav-item nav-link" to="/dashboard">Dashboard</RouterLink>
         <RouterLink class="nav-item nav-link" to="/profile">Profile</RouterLink>
+        <RouterLink class="nav-item nav-link" to="/auth">Login/Register</RouterLink>
       </div>
     </div>
   </nav>

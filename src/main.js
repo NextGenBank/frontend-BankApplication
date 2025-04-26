@@ -7,7 +7,8 @@ import About from "./components/About.vue";
 import Auth from "./components/Auth.vue";
 import Profile from "./components/Profile.vue";
 // import ArticlePage from "./components/ArticlePage.vue";
-// import ReadLaterTable from "./components/ReadLaterTable.vue";
+// import ReadLaterTable from "./components/ReadLaterTable.vue";\
+import CustomerDashboard from "./components/CustomerDashboard.vue";
 import { getAuthToken, setAuthToken } from "@/utils/auth";
 import { createPinia } from "pinia";
 
@@ -59,6 +60,10 @@ const routes = [
   //   path: "/read-later",
   //   component: ReadLaterTable,
   // },
+  {
+    path: "/dashboard",
+    component: CustomerDashboard, 
+  },
 ];
 
 const router = createRouter({
