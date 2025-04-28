@@ -9,6 +9,8 @@ import Profile from "./components/Profile.vue";
 // import ArticlePage from "./components/ArticlePage.vue";
 // import ReadLaterTable from "./components/ReadLaterTable.vue";\
 import CustomerDashboard from "./components/CustomerDashboard.vue";
+import Transactions from "./components/Transactions.vue";
+
 import { getAuthToken, setAuthToken } from "@/utils/auth";
 import { createPinia } from "pinia";
 
@@ -64,6 +66,7 @@ const routes = [
     path: "/dashboard",
     component: CustomerDashboard, 
   },
+  { path: "/transactions", component: Transactions },
 ];
 
 const router = createRouter({

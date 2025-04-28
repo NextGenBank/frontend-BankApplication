@@ -83,7 +83,7 @@ export default {
         userStore.setUser(response.data.user);
 
         if (this.isLogin) {
-          this.$router.push("/profile"); // opt: replace it with a page I handle
+          this.$router.push("/");
         } else {
           this.isLogin = true;
         }
