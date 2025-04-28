@@ -1,13 +1,13 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./components/Home.vue";
 import About from "./components/About.vue";
-// import ArticleUpdate from "./components/ArticleUpdate.vue";
-// import ArticleUpdateImproved from "./components/ArticleUpdateImproved.vue";
-// import ArticleCreate from "./components/ArticleCreate.vue";
+import ATM_Dashboard from './components/ATM/Dashboard.vue';
+import ATM_Deposit from './components/ATM/Deposit.vue';
+import ATM_Withdraw from './components/ATM/Withdraw.vue';
+import ATM_WithdrawBills from './components/ATM/WithdrawBills.vue';
 import Auth from "./components/Auth.vue";
 import Profile from "./components/Profile.vue";
-// import ArticlePage from "./components/ArticlePage.vue";
-// import ReadLaterTable from "./components/ReadLaterTable.vue";
+
 import { getAuthToken, setAuthToken } from "@/utils/auth";
 import { createPinia } from "pinia";
 
@@ -27,26 +27,14 @@ const routes = [
     path: "/",
     component: Home,
   },
+  { path: '/dashboard', component: ATM_Dashboard },
   {
     path: "/about",
     component: About,
   },
-  // {
-  //   path: "/article",
-  //   component: ArticleCreate,
-  // },
-  // {
-  //   path: "/article/:id",
-  //   component: ArticlePage,
-  // },
-  // {
-  //   path: "/articles-edit/:id",
-  //   component: ArticleUpdate,
-  // },
-  // {
-  //   path: "/articles-improved/:id",
-  //   component: ArticleUpdateImproved,
-  // },
+  { path: '/deposit', component: ATM_Deposit },
+  { path: '/withdraw', component: ATM_Withdraw },
+  { path: '/withdraw-bills', component: ATM_WithdrawBills },
   {
     path: "/auth",
     component: Auth,
@@ -55,10 +43,7 @@ const routes = [
     path: "/profile",
     component: Profile,
   },
-  // {
-  //   path: "/read-later",
-  //   component: ReadLaterTable,
-  // },
+ 
 ];
 
 const router = createRouter({
