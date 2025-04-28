@@ -1,5 +1,9 @@
 <script>
+<<<<<<< HEAD
 import { API_ENDPOINTS } from "../config";
+=======
+import { API_ENDPOINTS } from "@/config";
+>>>>>>> 23e0820295f6d3d98a4a58decadb28386ad0ddb0
 import axios from "axios";
 import Notification from "./Notification.vue";
 import Loading from "./Loading.vue";

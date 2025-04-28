@@ -37,7 +37,11 @@
 </template>
 
 <script setup>
+<<<<<<< HEAD
 import Sidebar from '../components/Sidebar.vue'
+=======
+import Sidebar from '@/components/Sidebar.vue'
+>>>>>>> 23e0820295f6d3d98a4a58decadb28386ad0ddb0
 
 const transactions = [
   {
