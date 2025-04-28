@@ -1,8 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
-import axios from 'axios';
-
+import axios from "axios";
 import './assets/main.css';
 
 import App from "./App.vue";
@@ -42,7 +41,7 @@ const routes = [
   },
   {
     path: "/createaccount",
-    name: "CreateAccount",
+    name: "CreateUserAccount",
     component: CreateUserAccount,
   },
   {

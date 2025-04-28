@@ -25,7 +25,6 @@
 
 <script setup>
 import { ref } from 'vue'
-import TransferService from '@/services/TransferService'
 import Sidebar from '@/components/Sidebar.vue'
 
 const fields = [

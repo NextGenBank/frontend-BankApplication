@@ -25,12 +25,7 @@
 
 <script setup>
 import { ref } from 'vue'
-<<<<<<< HEAD
-import Sidebar from '../components/Sidebar.vue' 
-=======
-import UserService from '@/services/UserService'
 import Sidebar from '@/components/Sidebar.vue' 
->>>>>>> 23e0820295f6d3d98a4a58decadb28386ad0ddb0
 
 const fields = [
   { label: 'First Name', placeholder: 'Enter name here', type: 'text', model: 'firstName' },
