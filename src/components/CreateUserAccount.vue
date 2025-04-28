@@ -47,6 +47,8 @@ const formData = ref({
   phone: ''
 })
 
+
+/*
 function submitCreateAccount() {
   UserService.createUser(formData.value)
     .then(response => {
@@ -56,4 +58,6 @@ function submitCreateAccount() {
       console.error('Failed to create user', error)
     })
 }
+*/
+
 </script>

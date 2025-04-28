@@ -6,7 +6,7 @@
         <li><router-link to="/dashboard" class="sidebar-link" active-class="active-link">Dashboard</router-link></li>
         <li><router-link to="/transactions" class="sidebar-link" active-class="active-link">Transactions</router-link></li>
         <li><router-link to="/transfer" class="sidebar-link" active-class="active-link">Transfer</router-link></li>
-        <li><router-link to="/" class="sidebar-link" active-class="active-link" exact>Create account</router-link></li>
+        <li><router-link to="/createaccount" class="sidebar-link" active-class="active-link" exact>Create account</router-link></li>
         <li><router-link to="/signups" class="sidebar-link" active-class="active-link">Sign ups</router-link></li>
         <li><router-link to="/accounts" class="sidebar-link" active-class="active-link">Accounts</router-link></li>
       </ul>
