@@ -1,13 +1,11 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "./components/Home.vue";
 import About from "./components/About.vue";
-// import ArticleUpdate from "./components/ArticleUpdate.vue";
-// import ArticleUpdateImproved from "./components/ArticleUpdateImproved.vue";
-// import ArticleCreate from "./components/ArticleCreate.vue";
 import Auth from "./components/Auth.vue";
-import Profile from "./components/Profile.vue";
-// import ArticlePage from "./components/ArticlePage.vue";
-// import ReadLaterTable from "./components/ReadLaterTable.vue";
+import CustomerProfileView from "./components/CustomerProfileView.vue";
+import CustomerTransferFundsForm from "./components/CustomerTransferFundsForm.vue";
+import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
+import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
 import { getAuthToken, setAuthToken } from "@/utils/auth";
 import { createPinia } from "pinia";
 
@@ -31,34 +29,26 @@ const routes = [
     path: "/about",
     component: About,
   },
-  // {
-  //   path: "/article",
-  //   component: ArticleCreate,
-  // },
-  // {
-  //   path: "/article/:id",
-  //   component: ArticlePage,
-  // },
-  // {
-  //   path: "/articles-edit/:id",
-  //   component: ArticleUpdate,
-  // },
-  // {
-  //   path: "/articles-improved/:id",
-  //   component: ArticleUpdateImproved,
-  // },
   {
     path: "/auth",
     component: Auth,
   },
   {
     path: "/profile",
-    component: Profile,
+    component: CustomerProfileView,
   },
-  // {
-  //   path: "/read-later",
-  //   component: ReadLaterTable,
-  // },
+  {
+    path: "/transferFunds",
+    component: CustomerTransferFundsForm,
+  },
+  {
+    path: "/pending",
+    component: EmployeePendingApprovals,
+  },
+  {
+    path: "/approved",
+    component: EmployeeApprovedAccounts,
+  },
 ];
 
 const router = createRouter({
