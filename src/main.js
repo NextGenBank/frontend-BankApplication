@@ -50,9 +50,24 @@ const routes = [
   //   path: "/articles-improved/:id",
   //   component: ArticleUpdateImproved,
   // },
+  { path: '/deposit', component: ATM_Deposit },
+  { path: '/withdraw', component: ATM_Withdraw },
+  { path: '/withdraw-bills', component: ATM_WithdrawBills },
   {
     path: "/auth",
     component: Auth,
+  },
+  {
+    path: "/pending",
+    component: EmployeePendingApprovals,
+  },
+  {
+    path: "/approved",
+    component: EmployeeApprovedAccounts,
+  },
+  {
+    path: "/transferfunds",
+    component: CustomerTransferFundsForm,
   },
   {
     path: "/profile",
