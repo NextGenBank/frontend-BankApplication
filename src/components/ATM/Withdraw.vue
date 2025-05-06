@@ -26,7 +26,8 @@
     },
     methods: {
       toBills() {
-        this.$router.push({ path: '/withdraw-bills', query: { amount: this.amount } });
+        // передаём сумму как query-параметр
+        this.$router.push({ path: '/atmwithdraw-bills', query: { amount: this.amount } });
       }
     }
   };
