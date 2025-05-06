@@ -1,22 +1,26 @@
 {
-  "name": "demo-code",
-  "version": "0.0.0",
-  "private": true,
-  "type": "module",
+  "name": "vue-user-account-form",
+  "version": "1.0.0",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "axios": "^1.8.1",
-    "pinia": "^3.0.1",
-    "vue": "^3.5.13",
-    "vue-router": "^4.5.0"
+    "@heroicons/vue": "^2.2.0",
+    "axios": "^1.9.0",
+    "chart.js": "^4.4.9",
+    "pinia": "^3.0.2",
+    "vue": "^3.4.0",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^5.2.1",
-    "vite": "^6.0.11",
-    "vite-plugin-vue-devtools": "^7.7.0"
+    "@tailwindcss/postcss": "^4.1.4",
+    "@vitejs/plugin-vue": "^4.0.0",
+    "autoprefixer": "^10.4.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.3.0",
+    "vite": "^4.0.0",
+    "vite-plugin-vue-devtools": "^7.7.6"
   }
 }
