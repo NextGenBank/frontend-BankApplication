@@ -13,7 +13,7 @@
 </template>
 
 <script setup>
-import Sidebar from '@/components/Sidebar.vue'
+import Sidebar from '@/components/EmployeeSidebar.vue'
 import DashboardMetrics from '@/components/DashboardMetrics.vue'
 import ChartAccountCreations from '@/components/ChartAccountCreations.vue'
 import RecentTransactions from '@/components/RecentTransactions.vue'

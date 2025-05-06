@@ -37,7 +37,7 @@
 </template>
 
 <script setup>
-import Sidebar from '@/components/Sidebar.vue'
+import Sidebar from '@/components/EmployeeSidebar.vue'
 
 const transactions = [
   {

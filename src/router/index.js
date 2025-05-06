@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 
-import Dashboard from '@/components/Dashboard.vue'
-import Transactions from '@/components/Transactions.vue'
-import Transfer from '@/components/Transfer.vue'
-import CreateUserAccount from '@/components/CreateUserAccount.vue'
+import Dashboard from '@/components/EmployeeDashboard.vue'
+import Transactions from '@/components/EmployeeTransactions.vue'
+import Transfer from '@/components/EmployeeTransfer.vue'
+import CreateUserAccount from '@/components/EmployeeCreateUserAccount.vue'
 
 const routes = [
   { path: '/dashboard', name: 'Dashboard', component: Dashboard },
