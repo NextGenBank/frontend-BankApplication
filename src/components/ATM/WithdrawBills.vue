@@ -23,7 +23,7 @@
       finish() {
         // TODO: API call
         alert(`Withdrew ${this.amount} in bills of ${this.bills}`);
-        this.$router.push('/dashboard');
+        this.$router.push('/atmdashboard');
       }
     }
   };

@@ -26,7 +26,7 @@
       doDeposit() {
         // TODO: API call
         alert(`Deposited ${this.amount} to ${this.account}`);
-        this.$router.push('/dashboard');
+        this.$router.push('/atmdashboard');
       }
     }
   };
