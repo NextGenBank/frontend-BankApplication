@@ -1,9 +1,7 @@
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
-import axios from "axios";
 import './assets/main.css';
-
 import App from "./App.vue";
 import { getAuthToken, setAuthToken } from "./utils/auth";
 
@@ -11,16 +9,22 @@ import { getAuthToken, setAuthToken } from "./utils/auth";
 import Home from "./components/Home.vue";
 import About from "./components/About.vue";
 import Auth from "./components/Auth.vue";
-import Dashboard from './components/EmployeeDashboard.vue';
-import EmployeeTransactions from './components/EmployeeTransactions.vue';
-import EmployeeTransfer from './components/EmployeeTransfer.vue';
-import CreateUserAccount from './components/EmployeeCreateUserAccount.vue';
+
+// Customer
 import CustomerProfileView from "./components/CustomerProfileView.vue";
 import CustomerTransferFundsForm from "./components/CustomerTransferFundsForm.vue";
+import CustomerDashboard from "./components/CustomerDashboard.vue";
+import CustomerTransactions from "./components/CustomerTransactions.vue";
+
+// Employee
+import EmployeeCreateUserAccount from './components/EmployeeCreateUserAccount.vue';
+import EmployeeDashboard from './components/EmployeeDashboard.vue';
+import EmployeeTransactions from './components/EmployeeTransactions.vue';
+import EmployeeTransfer from './components/EmployeeTransfer.vue';
 import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
 import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
-import CustomerDashboard from "./components/CustomerDashboard.vue";
-import Transactions from "./components/Transactions.vue";
+
+// ATM
 import ATM_Dashboard from './components/ATM/Dashboard.vue';
 import ATM_Deposit from './components/ATM/Deposit.vue';
 import ATM_Withdraw from './components/ATM/Withdraw.vue';
@@ -49,56 +53,65 @@ const routes = [
 
   // Customer
   {
-    path: "/customerdashboard",
+    path: "/customerDashboard",
     component: CustomerDashboard,
   },
   {
-    path: "/customertransferfunds",
+    path: "/customerTransferFundsForm",
     component: CustomerTransferFundsForm,
   },
   {
-    path: "/customerprofile",
+    path: "/customerProfile",
     component: CustomerProfileView,
   },
   {
-    path: "/customertransactions",
-    component: Transactions
+    path: "/customerTransactions",
+    component: CustomerTransactions
   },
 
   // Employee
   {
-    path: "/employeedashboard",
-    component: Dashboard,
+    path: "/employeeDashboard",
+    component: EmployeeDashboard,
   },
   {
-    path: "/pending",
+    path: "/employeePending",
     component: EmployeePendingApprovals,
   },
   {
-    path: "/approved",
+    path: "/employeeApproved",
     component: EmployeeApprovedAccounts,
   },
   {
-    path: "/transfer",
-    name: "Transfer",
+    path: "/employeeTransfer",
     component: EmployeeTransfer,
   },
   {
-    path: "/createaccount",
-    name: "CreateUserAccount",
-    component: CreateUserAccount,
+    path: "/employeeCreateAccount",
+    component: EmployeeCreateUserAccount,
   },
   {
-    path: "/EmployeeTransactions",
-    name: "Transactions",
+    path: "/employeeTransactions",
     component: EmployeeTransactions,
   },
 
   // ATM
-  { path: '/deposit', component: ATM_Deposit },
-  { path: '/withdraw', component: ATM_Withdraw },
-  { path: '/withdraw-bills', component: ATM_WithdrawBills },
-  { path: '/dashboard', component: ATM_Dashboard },
+  {
+    path: '/atmdeposit',
+    component: ATM_Deposit
+  },
+  {
+    path: '/atmwithdraw',
+    component: ATM_Withdraw
+  },
+  {
+    path: '/atmwithdraw-bills',
+    component: ATM_WithdrawBills
+  },
+  {
+    path: '/atmdashboard',
+    component: ATM_Dashboard
+  },
 ];
 
 const router = createRouter({
