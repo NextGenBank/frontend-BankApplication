@@ -9,7 +9,7 @@ import Auth from "./components/Auth.vue";
 import CustomerProfileView from "./components/CustomerProfileView.vue";
 import CustomerTransferFundsForm from "./components/CustomerTransferFundsForm.vue";
 import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
-import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";\
+import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
 import CustomerDashboard from "./components/CustomerDashboard.vue";
 import Transactions from "./components/Transactions.vue";
 
@@ -81,7 +81,7 @@ const routes = [
   //   component: ReadLaterTable,
   // },
   {
-    path: "/dashboard",
+    path: "/customerdashboard",
     component: CustomerDashboard, 
   },
   { path: "/transactions", component: Transactions },
