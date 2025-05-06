@@ -25,7 +25,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import Sidebar from '@/components/Sidebar.vue'
+import Sidebar from '@/components/EmployeeSidebar.vue'
 
 const fields = [
   { label: 'From account', placeholder: 'Enter Name', type: 'text', model: 'fromAccount' },
