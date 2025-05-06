@@ -12,9 +12,10 @@ import Home from "./components/Home.vue";
 import About from "./components/About.vue";
 import Auth from "./components/Auth.vue";
 import Profile from "./components/Profile.vue";
-import CreateUserAccount from './components/CreateUserAccount.vue'
-import Transfer from './components/Transfer.vue'
-import Transactions from './components/Transactions.vue'
+import Dashboard from './components/Dashboard.vue';
+import Transactions from './components/Transactions.vue';
+import Transfer from './components/Transfer.vue';
+import CreateUserAccount from './components/CreateUserAccount.vue';
 
 // Initialize auth token if it exists
 const token = getAuthToken();
@@ -40,9 +41,14 @@ const routes = [
     component: Profile,
   },
   {
-    path: "/createaccount",
-    name: "CreateUserAccount",
-    component: CreateUserAccount,
+    path: "/dashboard",
+    name: "Dashboard",
+    component: Dashboard,
+  },
+  {
+    path: "/transactions",
+    name: "Transactions",
+    component: Transactions,
   },
   {
     path: "/transfer",
@@ -50,9 +56,9 @@ const routes = [
     component: Transfer,
   },
   {
-    path: "/transactions",
-    name: "Transactions",
-    component: Transactions,
+    path: "/createaccount",
+    name: "CreateUserAccount",
+    component: CreateUserAccount,
   },
 ];
 

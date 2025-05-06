@@ -34,7 +34,8 @@ const fields = [
   { label: 'Password', placeholder: 'Enter your Password', type: 'password', model: 'password' },
   { label: 'Confirm password', placeholder: 'Confirm password', type: 'password', model: 'confirmPassword' },
   { label: 'BSN', placeholder: 'Enter your BSN', type: 'text', model: 'bsn' },
-  { label: 'Phone number', placeholder: 'Enter your phone number', type: 'text', model: 'phone' }
+  { label: 'Phone number', placeholder: 'Enter your phone number', type: 'text', model: 'phone' },
+  { label: 'Transfer limit', placeholder: 'Enter transfer limit', type: 'number', model: 'number' }
 ]
 
 const formData = ref({
@@ -44,7 +45,8 @@ const formData = ref({
   password: '',
   confirmPassword: '',
   bsn: '',
-  phone: ''
+  phone: '',
+  transferlimit: ''
 })
 
 
