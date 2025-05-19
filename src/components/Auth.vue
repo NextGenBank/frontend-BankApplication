@@ -3,9 +3,8 @@ import Notification from "./Notification.vue";
 import Loading from "./Loading.vue";
 import { setAuthToken } from "@/utils/auth";
 import { useUserStore } from "@/stores/user";
-// import { API_ENDPOINTS } from "@/config";
-// import axios from "axios";
-
+import { API_ENDPOINTS } from "@/config";
+import axios from "axios";
 
 export default {
   name: "Auth",
@@ -49,6 +48,7 @@ export default {
     async handleSubmit() {
       const userStore = useUserStore();
 
+      // Validate password match before sending to backend
       if (!this.isLogin && this.formData.password !== this.formData.confirm_password) {
         this.error = "Passwords do not match";
         return;
@@ -59,37 +59,45 @@ export default {
         this.success = null;
         this.isLoading = true;
 
-        // Simulate backend response for login/register
-        const response = {
-          data: {
-            token: "dummy-token-1234",
-            user: {
-              id: 1,
-              first_name: this.formData.first_name || "Jane",
-              last_name: this.formData.last_name || "Doe",
-              email: this.formData.email,
-              bsn: this.formData.bsn || "123456789",
-              phone: this.formData.phone || "0612345678",
-            },
-          },
-        };
+        let response;
+
+        if (this.isLogin) {
+          // Login request
+          response = await axios.post(`${API_ENDPOINTS.auth}/login`, {
+            email: this.formData.email,
+            password: this.formData.password,
+          });
+        } else {
+          // Register request (don't send confirm_password)
+          response = await axios.post(`${API_ENDPOINTS.auth}/register`, {
+            firstName: this.formData.first_name,
+            lastName: this.formData.last_name,
+            email: this.formData.email,
+            password: this.formData.password,
+            bsn: this.formData.bsn,
+            phone: this.formData.phone,
+          });
+        }
 
         this.success = this.isLogin
           ? "Login successful"
           : "Registration successful! You can now log in.";
 
-        localStorage.setItem("token", response.data.token);
-        setAuthToken(response.data.token);
-        userStore.setUser(response.data.user);
+        // Handle token and user info after login
+        if (response.data.token) {
+          localStorage.setItem("token", response.data.token);
+          setAuthToken(response.data.token);
+          userStore.setUser(response.data.user);
+        }
 
         if (this.isLogin) {
           this.$router.push("/");
         } else {
-          this.isLogin = true;
+          this.toggleAuthMode(); // switch to login mode after register
         }
       } catch (error) {
         console.error(error);
-        this.error = "An error occurred during authentication";
+        this.error = error.response?.data?.message || "Authentication error";
       } finally {
         this.isLoading = false;
       }
@@ -121,37 +129,37 @@ export default {
         <div v-if="!isLogin">
           <div class="mb-3">
             <label class="form-label fw-semibold">First Name</label>
-            <input v-model="formData.first_name" type="text" class="form-control" required placeholder="Enter your first name" />
+            <input v-model="formData.first_name" type="text" class="form-control" required />
           </div>
           <div class="mb-3">
             <label class="form-label fw-semibold">Last Name</label>
-            <input v-model="formData.last_name" type="text" class="form-control" required placeholder="Enter your last name" />
+            <input v-model="formData.last_name" type="text" class="form-control" required />
           </div>
         </div>
 
         <div class="mb-3">
           <label class="form-label fw-semibold">Email</label>
-          <input v-model="formData.email" type="email" class="form-control" required placeholder="Enter your email" />
+          <input v-model="formData.email" type="email" class="form-control" required />
         </div>
 
         <div class="mb-3">
           <label class="form-label fw-semibold">Password</label>
-          <input v-model="formData.password" type="password" class="form-control" required placeholder="Enter your password" />
+          <input v-model="formData.password" type="password" class="form-control" required />
         </div>
 
         <div v-if="!isLogin" class="mb-3">
           <label class="form-label fw-semibold">Confirm Password</label>
-          <input v-model="formData.confirm_password" type="password" class="form-control" required placeholder="Confirm your password" />
+          <input v-model="formData.confirm_password" type="password" class="form-control" required />
         </div>
 
         <div v-if="!isLogin" class="mb-3">
           <label class="form-label fw-semibold">BSN</label>
-          <input v-model="formData.bsn" type="text" class="form-control" required placeholder="Enter your BSN" />
+          <input v-model="formData.bsn" type="text" class="form-control" required />
         </div>
 
         <div v-if="!isLogin" class="mb-3">
           <label class="form-label fw-semibold">Phone Number</label>
-          <input v-model="formData.phone" type="tel" class="form-control" required placeholder="Enter your phone number" />
+          <input v-model="formData.phone" type="tel" class="form-control" required />
         </div>
 
         <button type="submit" class="btn btn-success w-100 btn-lg">
@@ -159,12 +167,7 @@ export default {
         </button>
       </form>
 
-      <Notification
-        v-if="error"
-        :isError="true"
-        @close="error = null"
-        class="mt-3"
-      >
+      <Notification v-if="error" :isError="true" @close="error = null" class="mt-3">
         {{ error }}
       </Notification>
     </div>
