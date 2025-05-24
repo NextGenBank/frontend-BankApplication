@@ -4,6 +4,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import './assets/main.css';
 import App from "./App.vue";
 import { getAuthToken, setAuthToken } from "./utils/auth";
+import './utils/axios'; // <-- activates the interceptors globally
 
 // Import components
 import Home from "./components/Home.vue";
@@ -117,6 +118,19 @@ const routes = [
 const router = createRouter({
   history: createWebHistory(),
   routes,
+});
+
+//navigation guard for protected routes
+router.beforeEach((to, from, next) => {
+  const publicPages = ["/", "/auth", "/about"];
+  const authRequired = !publicPages.includes(to.path);
+  const isLoggedIn = !!localStorage.getItem("token");
+
+  if (authRequired && !isLoggedIn) {
+    return next("/auth");
+  }
+
+  next();
 });
 
 const app = createApp(App);

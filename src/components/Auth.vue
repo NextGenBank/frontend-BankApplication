@@ -32,9 +32,9 @@ export default {
   methods: {
     toggleAuthMode() {
       this.isLogin = !this.isLogin;
-      this.error = null;
-      this.success = null;
-      this.isLoading = false;
+      this.resetForm();
+    },
+    resetForm() {
       this.formData = {
         first_name: "",
         last_name: "",
@@ -44,11 +44,14 @@ export default {
         bsn: "",
         phone: "",
       };
+      this.error = null;
+      this.success = null;
+      this.isLoading = false;
     },
     async handleSubmit() {
+      console.log("Form submitted:", JSON.stringify(this.formData, null, 2));
       const userStore = useUserStore();
 
-      // Validate password match before sending to backend
       if (!this.isLogin && this.formData.password !== this.formData.confirm_password) {
         this.error = "Passwords do not match";
         return;
@@ -60,15 +63,14 @@ export default {
         this.isLoading = true;
 
         let response;
-
         if (this.isLogin) {
-          // Login request
+          console.log("Sending login request...");
           response = await axios.post(`${API_ENDPOINTS.auth}/login`, {
             email: this.formData.email,
             password: this.formData.password,
           });
         } else {
-          // Register request (don't send confirm_password)
+          console.log("Sending register request...");
           response = await axios.post(`${API_ENDPOINTS.auth}/register`, {
             firstName: this.formData.first_name,
             lastName: this.formData.last_name,
@@ -79,24 +81,25 @@ export default {
           });
         }
 
-        this.success = this.isLogin
-          ? "Login successful"
-          : "Registration successful! You can now log in.";
+        console.log("Response received:", response.data);
 
-        // Handle token and user info after login
         if (response.data.token) {
           localStorage.setItem("token", response.data.token);
           setAuthToken(response.data.token);
           userStore.setUser(response.data.user);
         }
 
+        this.success = this.isLogin
+          ? "Login successful"
+          : "Registration successful! You can now log in.";
+
         if (this.isLogin) {
           this.$router.push("/");
         } else {
-          this.toggleAuthMode(); // switch to login mode after register
+          this.toggleAuthMode(); // switch to login after register
         }
       } catch (error) {
-        console.error(error);
+        console.error("Authentication error:", error);
         this.error = error.response?.data?.message || "Authentication error";
       } finally {
         this.isLoading = false;
@@ -108,10 +111,7 @@ export default {
 
 <template>
   <Loading v-if="isLoading" />
-
-  <Notification v-if="success" :isError="false" @close="success = null">
-    {{ success }}
-  </Notification>
+  <Notification v-if="success" :isError="false" @close="success = null">{{ success }}</Notification>
 
   <div class="container d-flex align-items-center justify-content-center min-vh-100">
     <div class="card shadow-lg p-4" style="width: 100%; max-width: 500px; border-radius: 20px;">
