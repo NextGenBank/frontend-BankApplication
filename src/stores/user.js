@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import { setAuthToken } from "@/utils/auth";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -14,6 +15,7 @@ export const useUserStore = defineStore("user", {
       this.user = null;
       this.isAuthenticated = false;
       localStorage.removeItem("token");
+      setAuthToken(null); // clear token from Axios headers
     },
   },
 });
