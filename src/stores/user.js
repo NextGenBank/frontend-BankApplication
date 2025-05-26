@@ -15,7 +15,14 @@ export const useUserStore = defineStore("user", {
       this.user = null;
       this.isAuthenticated = false;
       localStorage.removeItem("token");
-      setAuthToken(null); // clear token from Axios headers
+      setAuthToken(null);
+    },
+    restoreFromToken() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        setAuthToken(token);
+        this.isAuthenticated = true;
+      }
     },
   },
 });

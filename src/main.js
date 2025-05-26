@@ -5,6 +5,7 @@ import './assets/main.css';
 import App from "./App.vue";
 import { getAuthToken, setAuthToken } from "./utils/auth";
 import './utils/axios'; // <-- activates the interceptors globally
+import { useUserStore } from "@/stores/user";
 
 // Import components
 import Home from "./components/Home.vue";
@@ -137,5 +138,8 @@ const app = createApp(App);
 
 app.use(router);
 app.use(createPinia());
+
+const userStore = useUserStore();
+userStore.restoreFromToken();
 
 app.mount("#app");

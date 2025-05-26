@@ -1,32 +1,57 @@
 <script>
+import axios from "axios";
+import { API_ENDPOINTS } from "@/config";
+
 export default {
   name: "CustomerDashboard",
   data() {
     return {
-      customer: {
-        firstName: "John",
-        lastName: "Doe",
-        accountNumber: "1234567890",
-      },
+      customer: null,
+      accounts: [],
       balanceInfo: {
-        currentBalance: 44500.0,
-        income: 54500.0,
-        expense: 10000.0,
+        currentBalance: 0,
+        income: 0,
+        expense: 0,
       },
-      accounts: [
-        { type: "Checking", balance: 44500.0 },
-        { type: "Savings", balance: 44500.0 },
-      ],
       selectedDateRange: "Apr 22 – May 21, 2024",
       selectedPeriod: "This Month",
     };
   },
+  async created() {
+    try {
+      // Load customer info
+      const userRes = await axios.get(API_ENDPOINTS.currentUser);
+      const user = userRes.data;
+
+      this.customer = {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        accountNumber: user.userId,
+      };
+
+      // Load accounts
+      const accountsRes = await axios.get(API_ENDPOINTS.myAccounts);
+      this.accounts = accountsRes.data.map(acc => ({
+        type: acc.accountType,
+        balance: acc.balance,
+      }));
+
+      // Calculate balance summary
+      const totalBalance = this.accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
+      this.balanceInfo.currentBalance = totalBalance;
+      this.balanceInfo.income = totalBalance * 1.2; // demo value
+      this.balanceInfo.expense = totalBalance * 0.2; // demo value
+    } catch (error) {
+      console.error("Failed to load customer data:", error);
+      alert("Error loading dashboard. Please log in again.");
+    }
+  },
 };
 </script>
 
+
 <template>
-  <div class="container py-5">
-    <!-- Top Info -->
+  <div class="container py-5" v-if="customer">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div class="text-start">
         <h5 class="text-success fw-bold">{{ customer.firstName }} {{ customer.lastName }}</h5>
@@ -39,7 +64,6 @@ export default {
       </div>
     </div>
 
-    <!-- Current Account Balance -->
     <section class="mb-5">
       <h4 class="fw-bold mb-3">Current Account Balance</h4>
       <div class="card shadow-sm p-4" style="background-color: #e6f4f1; border-radius: 20px;">
@@ -60,7 +84,6 @@ export default {
       </div>
     </section>
 
-    <!-- Accounts -->
     <section class="mb-5">
       <h4 class="fw-bold mb-3">Accounts</h4>
       <div class="row g-4">
@@ -73,7 +96,6 @@ export default {
       </div>
     </section>
 
-    <!-- Statistics -->
     <section>
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold">Statistics</h4>
@@ -110,6 +132,12 @@ export default {
         </div>
       </div>
     </section>
+  </div>
+
+  <div v-else class="text-center py-5">
+    <div class="spinner-border text-secondary" role="status">
+      <span class="visually-hidden">Loading...</span>
+    </div>
   </div>
 </template>
 
