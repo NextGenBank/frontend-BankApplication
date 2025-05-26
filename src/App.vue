@@ -1,22 +1,23 @@
 <script>
 import { useUserStore } from "@/stores/user";
+import { useRouter } from "vue-router";
 import { onMounted } from "vue";
 
 export default {
   setup() {
     const userStore = useUserStore();
+    const router = useRouter();
 
-    // restore auth state on page reload if token exists
     onMounted(() => {
       const token = localStorage.getItem("token");
       if (token && !userStore.isAuthenticated) {
-        // opt, fetch user data from backend if needed
         userStore.isAuthenticated = true;
       }
     });
 
     const handleLogout = () => {
       userStore.logout();
+      router.push("/auth");
     };
 
     return {
