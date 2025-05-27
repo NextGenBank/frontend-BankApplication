@@ -1,4 +1,6 @@
 <script>
+import axios from "axios";
+
 export default {
   name: "Transactions",
   data() {
@@ -11,6 +13,11 @@ export default {
         { id: 4, firstName: "Mike", lastName: "Johnson", iban: "NL23SNSB0917829871", type: "Credit Card", date: "16.03.2024 - 12:00", amount: 10000, status: "Completed" },
         { id: 5, firstName: "Laura", lastName: "Wilson", iban: "NL55BUNQ2045887991", type: "Bank Transfer", date: "17.03.2024 - 13:30", amount: -10000, status: "Pending" },
       ],
+      // IBAN Lookup
+      searchFirstName: "",
+      searchLastName: "",
+      ibanSearchResult: null,
+      ibanSearchError: null,
     };
   },
   computed: {
@@ -18,9 +25,36 @@ export default {
       if (!this.searchQuery.trim()) {
         return this.transactions;
       }
-      return this.transactions.filter(t => 
+      return this.transactions.filter(t =>
         `${t.firstName} ${t.lastName}`.toLowerCase().includes(this.searchQuery.trim().toLowerCase())
       );
+    },
+  },
+  methods: {
+    async searchIBAN() {
+      this.ibanSearchResult = null;
+      this.ibanSearchError = null;
+
+      if (!this.searchFirstName || !this.searchLastName) {
+        this.ibanSearchError = "Please enter both first and last name.";
+        return;
+      }
+
+      try {
+        const response = await axios.get("http://localhost:8080/api/accounts/lookup", {
+          params: {
+            firstName: this.searchFirstName,
+            lastName: this.searchLastName,
+          },
+        });
+        this.ibanSearchResult = response.data;
+      } catch (error) {
+        if (error.response && error.response.status === 404) {
+          this.ibanSearchError = "No user found with that name.";
+        } else {
+          this.ibanSearchError = "Error fetching IBAN.";
+        }
+      }
     },
   },
 };
@@ -41,6 +75,29 @@ export default {
         <span class="input-group-text">
           <i class="bi bi-search"></i>
         </span>
+      </div>
+    </div>
+
+    <!-- IBAN Lookup -->
+    <div class="mb-5">
+      <h4 class="fw-bold">Lookup Customer IBAN</h4>
+      <div class="row g-2 mb-3">
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="First name" v-model="searchFirstName" />
+        </div>
+        <div class="col-md-4">
+          <input type="text" class="form-control" placeholder="Last name" v-model="searchLastName" />
+        </div>
+        <div class="col-md-4">
+          <button class="btn btn-primary w-100" @click="searchIBAN">Search</button>
+        </div>
+      </div>
+      <div v-if="ibanSearchError" class="alert alert-danger">{{ ibanSearchError }}</div>
+      <div v-if="ibanSearchResult" class="alert alert-success">
+        <strong>{{ ibanSearchResult.firstName }} {{ ibanSearchResult.lastName }}</strong>'s IBAN(s):
+        <ul>
+          <li v-for="iban in ibanSearchResult.ibans" :key="iban">{{ iban }}</li>
+        </ul>
       </div>
     </div>
 
@@ -81,7 +138,7 @@ export default {
           </tr>
           <tr v-if="filteredTransactions.length === 0">
             <td colspan="6" class="text-center py-4 text-muted">
-                No transactions found for that name.
+              No transactions found for that name.
             </td>
           </tr>
         </tbody>
