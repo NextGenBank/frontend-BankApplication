@@ -19,28 +19,29 @@ export default {
   },
   async created() {
     try {
-      // Load customer info
       const userRes = await axios.get(API_ENDPOINTS.currentUser);
       const user = userRes.data;
 
       this.customer = {
+        userId: user.userId,
         firstName: user.firstName,
         lastName: user.lastName,
-        accountNumber: user.userId,
+        email: user.email,
+        phone: user.phoneNumber,
+        bsn: user.bsn,
       };
 
-      // Load accounts
       const accountsRes = await axios.get(API_ENDPOINTS.myAccounts);
       this.accounts = accountsRes.data.map(acc => ({
         type: acc.accountType,
         balance: acc.balance,
+        iban: acc.iban,
       }));
 
-      // Calculate balance summary
       const totalBalance = this.accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
       this.balanceInfo.currentBalance = totalBalance;
-      this.balanceInfo.income = totalBalance * 1.2; // demo value
-      this.balanceInfo.expense = totalBalance * 0.2; // demo value
+      this.balanceInfo.income = totalBalance * 1.2; // placeholder logic
+      this.balanceInfo.expense = totalBalance * 0.2;
     } catch (error) {
       console.error("Failed to load customer data:", error);
       alert("Error loading dashboard. Please log in again.");
@@ -49,27 +50,29 @@ export default {
 };
 </script>
 
-
 <template>
   <div class="container py-5" v-if="customer">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <div class="text-start">
-        <h5 class="text-success fw-bold">{{ customer.firstName }} {{ customer.lastName }}</h5>
-        <h2 class="fw-bold">{{ customer.accountNumber }}</h2>
-      </div>
-      <div>
-        <button class="btn btn-outline-secondary btn-sm">
-          {{ selectedDateRange }}
-        </button>
-      </div>
+    <!-- Customer Info -->
+    <div class="mb-4">
+      <h4 class="text-success fw-bold">{{ customer.firstName }} {{ customer.lastName }}</h4>
+      <p class="text-muted mb-1">User ID: {{ customer.userId }}</p>
+      <p class="text-muted mb-1">Email: {{ customer.email }}</p>
+      <p class="text-muted mb-1">Phone: {{ customer.phone }}</p>
+      <p class="text-muted">BSN: {{ customer.bsn }}</p>
     </div>
 
+    <!-- Date Range -->
+    <div class="d-flex justify-content-end mb-4">
+      <button class="btn btn-outline-secondary btn-sm">{{ selectedDateRange }}</button>
+    </div>
+
+    <!-- Account Summary -->
     <section class="mb-5">
       <h4 class="fw-bold mb-3">Current Account Balance</h4>
       <div class="card shadow-sm p-4" style="background-color: #e6f4f1; border-radius: 20px;">
         <div class="row text-center">
           <div class="col">
-            <h6 class="text-muted">Current Balance</h6>
+            <h6 class="text-muted">Combined Balance</h6>
             <h3 class="fw-bold">${{ balanceInfo.currentBalance.toFixed(2) }}</h3>
           </div>
           <div class="col">
@@ -84,24 +87,29 @@ export default {
       </div>
     </section>
 
+    <!-- Accounts Display (Side-by-Side) -->
     <section class="mb-5">
       <h4 class="fw-bold mb-3">Accounts</h4>
       <div class="row g-4">
-        <div v-for="account in accounts" :key="account.type" class="col-md-6">
+        <div
+          v-for="account in accounts"
+          :key="account.iban"
+          class="col-md-6"
+        >
           <div class="card p-4 shadow-sm text-center" style="background-color: #f0faf9; border-radius: 20px;">
             <h5 class="text-primary">{{ account.type }}</h5>
             <h3 class="fw-bold mt-2">${{ account.balance.toFixed(2) }}</h3>
+            <p class="text-muted mt-2">IBAN: {{ account.iban }}</p>
           </div>
         </div>
       </div>
     </section>
 
+    <!-- Statistics Section -->
     <section>
       <div class="d-flex justify-content-between align-items-center mb-3">
-        <h4 class="fw-bold">Statistics</h4>
-        <button class="btn btn-outline-secondary btn-sm">
-          {{ selectedPeriod }}
-        </button>
+        <h4 class="fw-bold">Spending Statistics</h4>
+        <button class="btn btn-outline-secondary btn-sm">{{ selectedPeriod }}</button>
       </div>
 
       <div class="mb-4">
