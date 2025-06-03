@@ -12,7 +12,8 @@
               <th class="pb-2">User initiating</th>
               <th class="pb-2">Time stamp</th>
               <th class="pb-2">Transfer amount</th>
-              </tr>
+              <th class="pb-2">Type</th>
+            </tr>
           </thead>
           <tbody>
             <tr v-for="(transaction, index) in transactions" :key="index" class="border-t">
@@ -22,9 +23,12 @@
               <td class="py-3">{{ transaction.timestamp }}</td>
               <td class="py-3 font-semibold"
                   :class="transaction.amount > 0 ? 'text-green-600' : 'text-red-600'">
-                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
+                {{ formatAmount(transaction.amount) }}
               </td>
-              </tr>
+              <td class="py-3">
+                {{ transaction.transactionType }}
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -33,24 +37,34 @@
 </template>
 
 <script setup>
-import Sidebar from '@/components/EmployeeSidebar.vue'
 import { ref, onMounted } from 'vue'
+import Sidebar from '@/components/EmployeeSidebar.vue'
 import axios from 'axios'
 
 const transactions = ref([])
 
 onMounted(async () => {
   try {
-    const response = await axios.get('http://localhost:8080/api/transactions');
-    transactions.value = response.data;
+    console.log('Fetching transactions...')
+    const response = await axios.get('/api/transactions')
+    console.log('Response:', response)
+    transactions.value = response.data
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error('Failed to fetch transactions', error)
+    alert('Error fetching transactions: ' + (error.response?.data?.error || error.message))
   }
-});
+})
+
+function formatAmount(amount) {
+  if (!amount) return '0.00'
+  const num = parseFloat(amount)
+  return (num > 0 ? '+' : '') + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 </script>
 
 <style scoped>
+/* Optional: Slight hover effect on table rows */
 tbody tr:hover {
-  background-color: #f0fdf4;
+  background-color: #f0fdf4; /* Light green background on hover */
 }
 </style>
