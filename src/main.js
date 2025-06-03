@@ -107,13 +107,19 @@ const routes = [
     component: ATM_Withdraw
   },
   {
-    path: '/atmwithdraw-bills',
-    component: ATM_WithdrawBills
-  },
-  {
     path: '/atmdashboard',
     component: ATM_Dashboard
   },
+  {
+    path: '/atmwithdraw-bills',
+    name: 'WithdrawBills',
+    component: ATM_WithdrawBills,
+    props: route => ({
+      amount: route.query.amount,
+      account: route.query.account,
+      iban: route.query.iban
+    })
+  }
 ];
 
 const router = createRouter({
@@ -121,7 +127,6 @@ const router = createRouter({
   routes,
 });
 
-//navigation guard for protected routes
 router.beforeEach((to, from, next) => {
   const publicPages = ["/", "/auth", "/about"];
   const authRequired = !publicPages.includes(to.path);
@@ -130,12 +135,10 @@ router.beforeEach((to, from, next) => {
   if (authRequired && !isLoggedIn) {
     return next("/auth");
   }
-
   next();
 });
 
 const app = createApp(App);
-
 app.use(router);
 app.use(createPinia());
 

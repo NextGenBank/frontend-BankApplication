@@ -1,42 +1,22 @@
 <script>
-import { useUserStore } from "@/stores/user";
-import { useRouter } from "vue-router";
-import { onMounted } from "vue";
+import { RouterLink, RouterView } from 'vue-router'
+import { useUserStore } from '@/stores/user'
 
 export default {
+  components: { RouterLink, RouterView },
   setup() {
-    const userStore = useUserStore();
-    const router = useRouter();
-
-    onMounted(() => {
-      const token = localStorage.getItem("token");
-      if (token && !userStore.isAuthenticated) {
-        userStore.isAuthenticated = true;
-      }
-    });
-
-    const handleLogout = () => {
-      userStore.logout();
-      router.push("/auth");
-    };
-
-    return {
-      userStore,
-      handleLogout,
-    };
-  },
-};
+    const userStore = useUserStore()
+    return { userStore }
+  }
+}
 </script>
-
+<!-- 
+  Make a check that if you're an employee the navigation is hidden because employee uses sidebar instead
+ -->
 <template>
-  <!-- Hide navbar if user is EMPLOYEE (they use sidebar instead) -->
-  <nav
-    class="navbar navbar-expand-lg navbar-light bg-light"
-    v-if="!userStore.user || userStore.user.role !== 'EMPLOYEE'"
-  >
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
       <RouterLink to="/" class="navbar-brand">NextGenBank</RouterLink>
-
       <div class="navbar-nav ms-auto">
         <RouterLink class="nav-item nav-link" to="/atmdashboard">ATM</RouterLink>
         <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
@@ -46,7 +26,6 @@ export default {
       </div>
     </div>
   </nav>
-
   <div class="container">
     <main>
       <RouterView />
