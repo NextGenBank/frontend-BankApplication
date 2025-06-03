@@ -23,8 +23,9 @@ import EmployeeCreateUserAccount from './components/EmployeeCreateUserAccount.vu
 import EmployeeDashboard from './components/EmployeeDashboard.vue';
 import EmployeeTransactions from './components/EmployeeTransactions.vue';
 import EmployeeTransfer from './components/EmployeeTransfer.vue';
-import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
+import EmployeePendingApprovals from "./components/EmployeePendingAccounts.vue";
 import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
+import EmployeeRejectedAccounts from "./components/EmployeeRejectedAccounts.vue";
 
 // ATM
 import ATM_Dashboard from './components/ATM/Dashboard.vue';
@@ -83,6 +84,10 @@ const routes = [
   {
     path: "/employeeApproved",
     component: EmployeeApprovedAccounts,
+  }, 
+  {
+    path: "/employeeRejected",
+    component: EmployeeRejectedAccounts,
   },
   {
     path: "/employeeTransfer",

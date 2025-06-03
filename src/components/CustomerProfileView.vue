@@ -1,56 +1,66 @@
-<script setup>
-import ProfileCard from './CustomerProfileCard.vue'
-import AccountBalance from './CustomerAccountBalance.vue'
+<script>
+import axios from "axios";
+import ProfileCard from './CustomerProfileCard.vue';
+import AccountBalance from './CustomerAccountBalance.vue';
+import { API_ENDPOINTS } from '@/config';
 
-const user = {
-    name: 'John Doe',
-    email: 'johndoe@gmail.com',
-    phone: '+31 6 12345678',
-    bsn: '9999999999',
-    profilePicture: 'https://randomuser.me/api/portraits/men/1.jpg'
-}
+export default {
+    name: "CustomerProfileView",
+    components: {
+        ProfileCard,
+        AccountBalance
+    },
+    data() {
+        return {
+            user: null,
+            accounts: [],
+            isLoading: true,
+        };
+    },
+    async created() {
+        try {
+            const { data: userData } = await axios.get(API_ENDPOINTS.currentUser);
+            this.user = {
+                name: `${userData.firstName} ${userData.lastName}`,
+                email: userData.email,
+                phone: userData.phoneNumber,
+                bsn: userData.bsn
+            };
 
-const transactions = [
-    { name: 'Name', date: 'Date', amount: -10000 },
-    { name: 'Name', date: 'Date', amount: 10000 },
-    { name: 'Name', date: 'Date', amount: -10000 },
-    { name: 'Name', date: 'Date', amount: 10000 },
-    { name: 'Name', date: 'Date', amount: -10000 },
-    { name: 'Name', date: 'Date', amount: 10000 },
-]
+            const { data: accounts } = await axios.get(API_ENDPOINTS.myAccounts);
+            this.accounts = accounts;
+        } catch (error) {
+            console.error("Failed to load profile:", error);
+            alert("Unable to load profile data. Please log in again.");
+        } finally {
+            this.isLoading = false;
+        }
+    }
+};
 </script>
 
 <template>
-    <div class="d-flex">
-        <Sidebar />
-        <div class="flex-grow-1 p-4">
-
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <div>
-                    <h1 class="fw-bold mb-1">Profile</h1>
-                    <p class="text-success">1234567890</p>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <input type="text" placeholder="Search" class="form-control" style="width: 200px;" />
-                    <i class="bi bi-bell fs-4"></i>
-                    <img :src="user.profilePicture" class="rounded-circle"
-                        style="width: 40px; height: 40px; object-fit: cover;" />
-                </div>
+    <div class="p-4" v-if="!isLoading && user">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h1 class="fw-bold mb-1">Profile</h1>
+                <p class="text-success">{{ user.bsn }}</p>
             </div>
+        </div>
 
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <ProfileCard :name="user.name" :email="user.email" :phone="user.phone" :bsn="user.bsn"
-                        :profilePicture="user.profilePicture" />
-                </div>
-
-                <div class="col-md-8">
-                    <AccountBalance :balance="44500" />
-                    <TransactionList :transactions="transactions" />
-                </div>
+        <div class="row g-4">
+            <div class="col-md-4">
+                <ProfileCard :name="user.name" :email="user.email" :phone="user.phone" :bsn="user.bsn" />
             </div>
+            <div class="col-md-8">
+                <AccountBalance :accounts="accounts" />
+            </div>
+        </div>
+    </div>
 
+    <div v-else class="text-center py-5">
+        <div class="spinner-border text-secondary" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
     </div>
 </template>

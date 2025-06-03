@@ -1,85 +1,68 @@
-<script setup>
-import { reactive } from 'vue'
+<script>
+import axios from 'axios';
 
-const form = reactive({
-    account: '',
-    amount: '',
-    iban: '',
-    cardHolder: '',
-    date: '',
-    description: ''
-})
-
-const accounts = [
-    'Main Account',
-    'Savings Account',
-    'Investment Account'
-]
-
-function submitForm() {
-    console.log('Transferring funds:', form)
-    alert('Funds transfer submitted ✅')
-}
-
-function cancel() {
-    // Reset form or navigate back
-    Object.keys(form).forEach(key => form[key] = '')
-}
+export default {
+    data() {
+        return {
+            form: {
+                from: 'CHECKING',
+                amount: null
+            },
+            message: '',
+            success: false
+        };
+    },
+    methods: {
+        async submitForm() {
+            try {
+                await axios.post('/transactions/switch', this.form);
+                this.message = 'Transfer completed successfully.';
+                this.success = true;
+                this.resetForm();
+            } catch (err) {
+                this.message = err.response?.data?.message || 'Transfer failed.';
+                this.success = false;
+            }
+        },
+        resetForm() {
+            this.form = { from: 'CHECKING', amount: null };
+            this.message = '';
+        }
+    }
+};
 </script>
 
+
 <template>
-    <div class="bg-white p-5 rounded-4 shadow-sm mx-auto" style="max-width: 500px;">
-        <h2 class="text-success fw-bold text-center mb-5">Transfer funds</h2>
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 class="text-xl font-semibold text-center">Switch Funds</h2>
 
         <form @submit.prevent="submitForm">
-
-            <!-- Account Dropdown -->
-            <div class="mb-4">
-                <label class="form-label">Account</label>
-                <select v-model="form.account" class="form-select">
-                    <option disabled value="">Account Name</option>
-                    <option v-for="acc in accounts" :key="acc" :value="acc">{{ acc }}</option>
-                </select>
-            </div>
-
-            <!-- Amount -->
-            <div class="mb-4">
-                <label class="form-label">Amount</label>
-                <input v-model="form.amount" type="text" class="form-control" placeholder="100,000" />
-            </div>
-
-            <!-- IBAN -->
-            <div class="mb-4">
-                <label class="form-label">IBAN</label>
-                <input v-model="form.iban" type="text" class="form-control" placeholder="0000 0000 0000 0000" />
-            </div>
-
-            <!-- Card Holder Name -->
-            <div class="mb-4">
-                <label class="form-label">Card holder name</label>
-                <input v-model="form.cardHolder" type="text" class="form-control"
-                    placeholder="Enter card holder name" />
-            </div>
-
-            <!-- Transfer Date + Description -->
-            <div class="row mb-4">
-                <div class="col">
-                    <label class="form-label">Transfer date</label>
-                    <input v-model="form.date" type="text" class="form-control" placeholder="MM/YY" />
+            <div class="space-y-4">
+                <div>
+                    <label for="from" class="block text-sm font-medium">Transfer From</label>
+                    <select v-model="form.from" id="from" class="mt-1 block w-full rounded border px-3 py-2">
+                        <option value="CHECKING">Checking Account</option>
+                        <option value="SAVINGS">Savings Account</option>
+                    </select>
                 </div>
-                <div class="col">
-                    <label class="form-label">Description</label>
-                    <input v-model="form.description" type="text" class="form-control" placeholder="Description" />
+
+                <div>
+                    <label for="amount" class="block text-sm font-medium">Amount</label>
+                    <input v-model.number="form.amount" id="amount" type="number" min="0.01" step="0.01" required
+                        class="mt-1 block w-full rounded border px-3 py-2" />
                 </div>
             </div>
 
-            <!-- Buttons -->
-            <div class="d-flex justify-content-between">
-                <button type="button" @click="cancel"
-                    class="btn btn-light border text-dark px-4 py-2 fw-bold">Cancel</button>
-                <button type="submit" class="btn btn-success px-4 py-2 fw-bold">Transfer</button>
+            <div class="mt-6 flex justify-end gap-4">
+                <button type="button" @click="resetForm" class="px-4 py-2 rounded bg-gray-200">Cancel</button>
+                <button type="submit"
+                    class="px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700">Transfer</button>
             </div>
-
         </form>
+
+        <div v-if="message" :class="{ 'text-green-600': success, 'text-red-600': !success }" class="mt-4 text-center">
+            {{ message }}
+        </div>
     </div>
 </template>

@@ -5,4 +5,10 @@ export const API_ENDPOINTS = {
   currentUser: `${API_BASE_URL}/api/user/me`,
   myAccounts: `${API_BASE_URL}/api/accounts/my`,
   lookupIBAN: `${API_BASE_URL}/api/accounts/lookup`,
+
+  /* Employee */
+  usersByStatus: (status) => `/api/employees/customers/status?status=${status}`,
+  approveUser: (userId) => `/api/employees/customers/${userId}/approve`,
+  rejectUser: (userId) => `/api/employees/customers/${userId}/reject`
+
 };
