@@ -12,6 +12,7 @@ export default {
     <div class="container-fluid">
       <RouterLink to="/" class="navbar-brand">NextGenBank</RouterLink>
       <div class="navbar-nav ms-auto">
+        <RouterLink class="nav-item nav-link" to="/atmdashboard">ATM</RouterLink>
         <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
         <RouterLink class="nav-item nav-link" to="/customertransactions">Transactions</RouterLink>
         <RouterLink class="nav-item nav-link" to="/customerprofile">Profile</RouterLink>
