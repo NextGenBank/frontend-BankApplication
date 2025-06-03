@@ -1,4 +1,55 @@
-<!-- src/components/CustomerDashboard.vue -->
+<script>
+import axios from "axios";
+import { API_ENDPOINTS } from "@/config";
+
+export default {
+  name: "CustomerDashboard",
+  data() {
+    return {
+      customer: null,
+      accounts: [],
+      balanceInfo: {
+        currentBalance: 0,
+        income: 0,
+        expense: 0,
+      },
+      selectedDateRange: "Apr 22 – May 21, 2024",
+      selectedPeriod: "This Month",
+    };
+  },
+  async created() {
+    try {
+      const userRes = await axios.get(API_ENDPOINTS.currentUser);
+      const user = userRes.data;
+
+      this.customer = {
+        userId: user.userId,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        phone: user.phoneNumber,
+        bsn: user.bsn,
+      };
+
+      const accountsRes = await axios.get(API_ENDPOINTS.myAccounts);
+      this.accounts = accountsRes.data.map(acc => ({
+        type: acc.accountType,
+        balance: acc.balance,
+        iban: acc.iban,
+      }));
+
+      const totalBalance = this.accounts.reduce((sum, acc) => sum + parseFloat(acc.balance), 0);
+      this.balanceInfo.currentBalance = totalBalance;
+      this.balanceInfo.income = totalBalance * 1.2; // placeholder logic
+      this.balanceInfo.expense = totalBalance * 0.2;
+    } catch (error) {
+      console.error("Failed to load customer data:", error);
+      alert("Error loading dashboard. Please log in again.");
+    }
+  },
+};
+</script>
+
 <template>
   <div class="container py-5" v-if="customer">
     <!-- Customer Info -->
@@ -36,7 +87,7 @@
       </div>
     </section>
 
-    <!-- Accounts Display -->
+    <!-- Accounts Display (Side-by-Side) -->
     <section class="mb-5">
       <h4 class="fw-bold mb-3">Accounts</h4>
       <div class="row g-4">
@@ -54,7 +105,7 @@
       </div>
     </section>
 
-    <!-- Spending Statistics -->
+    <!-- Statistics Section -->
     <section>
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold">Spending Statistics</h4>
@@ -97,64 +148,6 @@
     </div>
   </div>
 </template>
-
-<script>
-import axios from "axios";
-import { API_ENDPOINTS } from "@/config";
-
-export default {
-  name: "CustomerDashboard",
-  data() {
-    return {
-      customer: null,
-      accounts: [],
-      balanceInfo: {
-        currentBalance: 0,
-        income: 0,
-        expense: 0,
-      },
-      selectedDateRange: "Apr 22 – May 21, 2024",
-      selectedPeriod: "This Month",
-    };
-  },
-  async created() {
-    try {
-      // 1) Получаем текущего залогиненного пользователя
-      const userRes = await axios.get(API_ENDPOINTS.currentUser);
-      const user = userRes.data;
-      this.customer = {
-        userId: user.userId,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        phone: user.phoneNumber,
-        bsn: user.bsn,
-      };
-
-      // 2) Получаем список аккаунтов текущего пользователя
-      const accountsRes = await axios.get(API_ENDPOINTS.myAccounts);
-      this.accounts = accountsRes.data.map(acc => ({
-        type: acc.accountType,
-        balance: acc.balance,
-        iban: acc.iban,
-      }));
-
-      // 3) Считаем сумму балансов
-      const totalBalance = this.accounts.reduce(
-        (sum, acc) => sum + parseFloat(acc.balance),
-        0
-      );
-      this.balanceInfo.currentBalance = totalBalance;
-      // Пока placeholder-логика для income/expense
-      this.balanceInfo.income = totalBalance * 1.2;
-      this.balanceInfo.expense = totalBalance * 0.2;
-    } catch (error) {
-      console.error("Failed to load customer data:", error);
-      alert("Error loading dashboard. Please log in again.");
-    }
-  },
-};
-</script>
 
 <style scoped>
 h4, h5 {
