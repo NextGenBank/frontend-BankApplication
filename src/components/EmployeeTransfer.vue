@@ -28,20 +28,16 @@ import { ref } from 'vue'
 import Sidebar from '@/components/EmployeeSidebar.vue'
 
 const fields = [
-  { label: 'From account', placeholder: 'Enter Name', type: 'text', model: 'fromAccount' },
-  { label: 'To account', placeholder: 'Enter Name', type: 'text', model: 'toAccount' },
-  { label: 'Account number', placeholder: 'Account number (IBAN)', type: 'text', model: 'accountNumber' },
-  { label: 'Bank', placeholder: 'Enter Bank Name', type: 'text', model: 'bank' },
+  { label: 'From account', placeholder: 'Account number (IBAN)', type: 'text', model: 'accountNumber' },
+  { label: 'To account', placeholder: 'Account number (IBAN)', type: 'text', model: 'accountNumber' },
   { label: 'Amount', placeholder: 'Enter Amount', type: 'number', model: 'amount' },
   { label: 'Transfer description', placeholder: 'Enter Transfer Description', type: 'text', model: 'description' },
-  { label: 'Timestamp', placeholder: '01.02.2026 – 12:04', type: 'text', model: 'timestamp' }
+  { label: 'Timestamp', placeholder: '', type: 'text', model: 'timestamp' }
 ]
 
 const transferData = ref({
   fromAccount: '',
   toAccount: '',
-  accountNumber: '',
-  bank: '',
   amount: '',
   description: '',
   timestamp: ''

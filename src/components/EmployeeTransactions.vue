@@ -12,8 +12,7 @@
               <th class="pb-2">User initiating</th>
               <th class="pb-2">Time stamp</th>
               <th class="pb-2">Transfer amount</th>
-              <th class="pb-2">Status</th>
-            </tr>
+              </tr>
           </thead>
           <tbody>
             <tr v-for="(transaction, index) in transactions" :key="index" class="border-t">
@@ -23,12 +22,9 @@
               <td class="py-3">{{ transaction.timestamp }}</td>
               <td class="py-3 font-semibold"
                   :class="transaction.amount > 0 ? 'text-green-600' : 'text-red-600'">
-                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount.toLocaleString() }},00
+                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}
               </td>
-              <td class="py-3">
-                <span class="bg-gray-300 text-gray-700 px-4 py-1 rounded-full text-sm">Pending</span>
-              </td>
-            </tr>
+              </tr>
           </tbody>
         </table>
       </div>
@@ -38,49 +34,23 @@
 
 <script setup>
 import Sidebar from '@/components/EmployeeSidebar.vue'
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
-const transactions = [
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Customer',
-    timestamp: '13.03.2026 – 09:39',
-    amount: 10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Employee',
-    timestamp: '13.03.2026 – 09:39',
-    amount: -10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Employee',
-    timestamp: '13.03.2026 – 09:39',
-    amount: -10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Customer',
-    timestamp: '13.03.2026 – 09:39',
-    amount: 10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Customer',
-    timestamp: '13.03.2026 – 09:39',
-    amount: -10000
+const transactions = ref([])
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:8080/api/transactions');
+    transactions.value = response.data;
+  } catch (error) {
+    console.error('Error fetching transactions:', error);
   }
-]
+});
 </script>
 
 <style scoped>
-/* Optional: Slight hover effect on table rows */
 tbody tr:hover {
-  background-color: #f0fdf4; /* Light green background on hover */
+  background-color: #f0fdf4;
 }
 </style>
