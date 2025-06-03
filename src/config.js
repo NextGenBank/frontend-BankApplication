@@ -7,8 +7,7 @@ export const API_ENDPOINTS = {
   lookupIBAN: `${API_BASE_URL}/api/accounts/lookup`,
 
   /* Employee */
-  usersByStatus: (status) => `/api/employees/customers/status?status=${status}`,
-  approveUser: (userId) => `/api/employees/customers/${userId}/approve`,
-  rejectUser: (userId) => `/api/employees/customers/${userId}/reject`
-
+  usersByStatus: (status) => `${API_BASE_URL}/api/employees/customers/status?status=${status}`,
+  approveUser: (userId) => `${API_BASE_URL}/api/employees/customers/${userId}/approve`,
+  rejectUser: (userId) => `${API_BASE_URL}/api/employees/customers/${userId}/reject`
 };

@@ -19,17 +19,17 @@ defineProps({
       </thead>
 
       <tbody>
-        <tr v-for="user in users" :key="user.id">
+        <tr v-for="user in users" :key="user.userId">
           <td>{{ user.firstName }}</td>
           <td>{{ user.lastName }}</td>
           <td>{{ user.bsn }}</td>
           <td>{{ user.email }}</td>
 
           <td v-if="showActions" class="d-flex gap-2 justify-content-center">
-            <button class="btn btn-success btn-sm" @click="$emit('approve', user.id)">
+            <button class="btn btn-success btn-sm" @click="$emit('approve', user.userId)">
               Approve
             </button>
-            <button class="btn btn-outline-danger btn-sm" @click="$emit('reject', user.id)">
+            <button class="btn btn-outline-danger btn-sm" @click="$emit('reject', user.userId)">
               Reject
             </button>
           </td>

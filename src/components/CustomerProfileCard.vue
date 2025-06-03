@@ -16,7 +16,5 @@ defineProps({
             <p class="mb-1"><small class="text-muted">Phone Number</small><br><strong>{{ phone }}</strong></p>
             <p class="mb-3"><small class="text-muted">BSN</small><br><strong>{{ bsn }}</strong></p>
         </div>
-
-        <button class="btn btn-success w-100">Reset Password</button>
     </div>
 </template>
