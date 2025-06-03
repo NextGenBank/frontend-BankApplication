@@ -38,16 +38,11 @@ export default {
       <RouterLink to="/" class="navbar-brand">NextGenBank</RouterLink>
 
       <div class="navbar-nav ms-auto">
-        <template v-if="userStore.isAuthenticated">
-          <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
-          <RouterLink class="nav-item nav-link" to="/customertransactions">Transactions</RouterLink>
-          <RouterLink class="nav-item nav-link" to="/customerprofile">Profile</RouterLink>
-          <button class="nav-item nav-link btn btn-link" @click="handleLogout">Logout</button>
-        </template>
-
-        <template v-else>
-          <RouterLink class="nav-item nav-link" to="/auth">Login/Register</RouterLink>
-        </template>
+        <RouterLink class="nav-item nav-link" to="/atmdashboard">ATM</RouterLink>
+        <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
+        <RouterLink class="nav-item nav-link" to="/customertransactions">Transactions</RouterLink>
+        <RouterLink class="nav-item nav-link" to="/customerprofile">Profile</RouterLink>
+        <RouterLink class="nav-item nav-link" to="/auth">Login/Register</RouterLink>
       </div>
     </div>
   </nav>
