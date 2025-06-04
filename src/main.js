@@ -25,6 +25,7 @@ import EmployeeTransactions from './components/EmployeeTransactions.vue';
 import EmployeeTransfer from './components/EmployeeTransfer.vue';
 import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
 import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
+import EmployeeCustomers from "./components/EmployeeCustomers.vue";
 
 // ATM
 import ATM_Dashboard from './components/ATM/Dashboard.vue';
@@ -95,6 +96,10 @@ const routes = [
   {
     path: "/employeeTransactions",
     component: EmployeeTransactions,
+  },
+  {
+    path: "/employeeCustomers",
+    component: EmployeeCustomers,
   },
 
   // ATM
