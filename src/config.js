@@ -7,7 +7,6 @@ export const API_ENDPOINTS = {
   myAccounts:  `${API_BASE_URL}/api/accounts/my`,
   lookupIBAN:  `${API_BASE_URL}/api/accounts/lookup`,
 
-  // <-- Обратите внимание здесь:
-  // вместо старых веток ATM.deposit/ATM.withdraw у нас один ключ "transactions"
+  
   transactions: `${API_BASE_URL}/api/transactions`
 };
