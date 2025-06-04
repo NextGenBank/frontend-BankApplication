@@ -11,6 +11,7 @@
 <script setup>
 import Sidebar from '@/components/EmployeeSidebar.vue'
 import DashboardMetrics from '@/components/DashboardMetrics.vue'
+
 </script>
 
 <style scoped>

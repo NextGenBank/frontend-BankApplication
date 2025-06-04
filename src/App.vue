@@ -1,4 +1,9 @@
 <script>
+import axios from 'axios'
+
+// Configure axios base URL
+axios.defaults.baseURL = 'http://localhost:8080'
+
 export default {
   setup() {
   },
