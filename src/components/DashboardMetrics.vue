@@ -8,12 +8,44 @@
 </template>
 
 <script setup>
-const customers = 32
-const accounts = 54
-const totalDeposits = 5124000
-const pendingTransfers = 8
-</script>
+import { ref, onMounted } from 'vue'
+import axios from 'axios'
 
+const customers = ref(0)
+const accounts = ref(0)
+const totalDeposits = ref(0)
+const pendingTransfers = ref(0)
+
+onMounted(async () => {
+  try {
+    // Fetch customer count
+    const customersResponse = await axios.get('/api/employees/customers')
+    if (customersResponse.data) {
+      customers.value = customersResponse.data.length || 0
+    }
+    
+    // Fetch accounts
+    const accountsResponse = await axios.get('/api/accounts')
+    if (accountsResponse.data) {
+      accounts.value = accountsResponse.data.length || 0
+      
+      // Calculate total deposits
+      let total = 0
+      accountsResponse.data.forEach(account => {
+        if (account.balance) {
+          total += parseFloat(account.balance)
+        }
+      })
+      totalDeposits.value = total
+    }
+    
+    // For now, pendingTransfers is hardcoded since we don't have a specific endpoint for that
+    pendingTransfers.value = 0
+  } catch (error) {
+    console.error('Failed to fetch dashboard metrics', error)
+  }
+})
+</script>
 
 <style scoped>
 .metrics {

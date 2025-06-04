@@ -206,8 +206,6 @@ async function fetchCustomerAccounts(customerId) {
   }
 }
 
-// Removed approve function as it's not part of this developer's tasks
-
 async function viewCustomerTransactions(customerId) {
   try {
     selectedCustomer.value = customers.value.find(c => c.userId === customerId)
