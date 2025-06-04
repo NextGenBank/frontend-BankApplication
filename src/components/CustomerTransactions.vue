@@ -1,5 +1,7 @@
+<!-- src/components/CustomerTransactions.vue -->
 <script>
 import axios from "axios";
+import { API_ENDPOINTS } from "@/config";
 
 export default {
   name: "CustomerTransactions",
@@ -20,9 +22,11 @@ export default {
         return this.transactions;
       }
       return this.transactions.filter(t =>
+        // Здесь у нас нет firstName/lastName в payload от сервера, 
+        // но можно фильтровать по type или iban. Оставляю логику «по имени» на будущее:
         `${t.firstName} ${t.lastName}`.toLowerCase().includes(this.searchQuery.trim().toLowerCase())
       );
-    },
+    }
   },
   mounted() {
     this.fetchTransactions();
@@ -31,22 +35,22 @@ export default {
     async fetchTransactions() {
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8080/api/transactions", {
+        const response = await axios.get(`${API_ENDPOINTS.transactions}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
-          },
+            Authorization: `Bearer ${token}`
+          }
         });
 
-        // Map backend response to expected format
+        // Сопоставляем ответ бекенда с нужным нам форматом
         this.transactions = response.data.map(tx => ({
           id: tx.transactionId,
           iban: tx.toIban || tx.fromIban || "Unknown",
-          type: tx.transactionType,
+          type: tx.transactionType,               // "DEPOSIT", "TRANSFER" или "WITHDRAWAL"
           date: new Date(tx.timestamp).toLocaleString(),
-          amount: parseFloat(tx.amount),
-          status: "Completed", // Adjust if status field exists
-          firstName: "", // Optional, if you want to show names
-          lastName: "",  // Optional
+          amount: parseFloat(tx.amount),           // положительное число
+          status: "Completed",                     // всегда «Completed» (можно добавить проверку, если у вас есть статус)
+          firstName: "", // если понадобятся имена
+          lastName: ""   // если понадобятся фамилии
         }));
       } catch (error) {
         console.error("Error fetching transactions:", error);
@@ -63,14 +67,14 @@ export default {
 
       try {
         const token = localStorage.getItem("token");
-        const response = await axios.get("http://localhost:8080/api/accounts/lookup", {
+        const response = await axios.get(`${API_ENDPOINTS.lookupIBAN}`, {
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`
           },
           params: {
             firstName: this.searchFirstName,
-            lastName: this.searchLastName,
-          },
+            lastName: this.searchLastName
+          }
         });
         this.ibanSearchResult = response.data;
       } catch (error) {
@@ -80,8 +84,8 @@ export default {
           this.ibanSearchError = "Error fetching IBAN.";
         }
       }
-    },
-  },
+    }
+  }
 };
 </script>
 
@@ -108,10 +112,20 @@ export default {
       <h4 class="fw-bold">Lookup Customer IBAN</h4>
       <div class="row g-2 mb-3">
         <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="First name" v-model="searchFirstName" />
+          <input
+            type="text"
+            class="form-control"
+            placeholder="First name"
+            v-model="searchFirstName"
+          />
         </div>
         <div class="col-md-4">
-          <input type="text" class="form-control" placeholder="Last name" v-model="searchLastName" />
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Last name"
+            v-model="searchLastName"
+          />
         </div>
         <div class="col-md-4">
           <button class="btn btn-primary w-100" @click="searchIBAN">Search</button>
@@ -143,8 +157,11 @@ export default {
             <td>{{ transaction.iban }}</td>
             <td>{{ transaction.type }}</td>
             <td>{{ transaction.date }}</td>
-            <td :class="transaction.amount > 0 ? 'text-success' : 'text-danger'">
-              {{ transaction.amount > 0 ? '+' : '-' }}${{ Math.abs(transaction.amount).toLocaleString() }}
+            <!-- Если тип WITHDRAWAL, показываем минус и красный цвет, иначе плюс и зелёный -->
+            <td
+              :class="transaction.type === 'WITHDRAWAL' ? 'text-danger' : 'text-success'"
+            >
+              {{ transaction.type === 'WITHDRAWAL' ? '-' : '+' }}${{ transaction.amount.toLocaleString() }}
             </td>
             <td>
               <span class="badge bg-success">{{ transaction.status }}</span>

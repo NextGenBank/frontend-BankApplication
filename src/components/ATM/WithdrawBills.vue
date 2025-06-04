@@ -9,11 +9,7 @@
         <button @click="choose(20)" class="btn btn-light">20</button>
         <button @click="choose(50)" class="btn btn-light">50</button>
       </div>
-      <button
-        @click="finish"
-        :disabled="!bills"
-        class="btn btn-success w-100"
-      >
+      <button @click="finish" class="btn btn-success w-100">
         Withdraw
       </button>
     </div>
@@ -25,38 +21,53 @@ import axios from "axios";
 import { API_ENDPOINTS } from "@/config";
 
 export default {
-  name: "ATM_WithdrawBills",
+  name: "WithdrawBills",
   data() {
     return {
       bills: null,
-      iban:   this.$route.query.iban || "",
-      amount: this.$route.query.amount || 0,
+      amount: null,
+      iban: null
     };
+  },
+  created() {
+    // Извлекаем из query параметры ?iban=...&amount=...
+    this.amount = this.$route.query.amount;
+    this.iban = this.$route.query.iban;
   },
   methods: {
     choose(n) {
       this.bills = n;
     },
     async finish() {
-      if (!this.iban || !this.amount || !this.bills) return;
-
+      if (!this.bills) {
+        alert("Please choose bills.");
+        return;
+      }
+      const payload = {
+        fromIban: this.iban,
+        toIban:   null,
+        amount:   parseFloat(this.amount),
+        bills:    this.bills
+      };
       try {
-        const payload = {
-          iban: this.iban,
-          amount: this.amount,
-          bills: this.bills
-        };
-        await axios.post(API_ENDPOINTS.ATM.withdraw, payload);
-      
-        this.$router.push("/atmdashboard");
+        // *** Обратите внимание: POST на  /api/transactions/withdraw  ***
+        await axios.post(
+          `${API_ENDPOINTS.transactions}/withdraw`,
+          payload
+        );
+        alert("Withdraw successful");
+        // После успешного снятия — редирект на страницу транзакций
+        this.$router.push("/customerTransactions");
       } catch (err) {
         console.error("Withdraw failed:", err.response || err);
-        const msg = err.response && err.response.data
-          ? err.response.data
-          : "Ошибка при снятии средств";
+        const msg = err.response?.data || "Error during withdrawal";
         alert(msg);
       }
-    },
-  },
+    }
+  }
 };
 </script>
+
+<style scoped>
+/* ваши стили, если нужны */
+</style>
