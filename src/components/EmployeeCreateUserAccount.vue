@@ -4,6 +4,12 @@
     <main class="flex-1 bg-gradient-to-r from-white to-green-50 flex items-center justify-center">
       <div class="bg-white shadow-md rounded-2xl p-12 w-full max-w-2xl">
         <h2 class="text-2xl font-bold text-center text-green-700 mb-6">Create user account</h2>
+        <div v-if="successMessage" class="bg-green-100 text-green-700 p-4 rounded mb-4">
+          {{ successMessage }}
+        </div>
+        <div v-if="errorMessage" class="bg-red-100 text-red-700 p-4 rounded mb-4">
+          {{ errorMessage }}
+        </div>
         <form class="space-y-4" @submit.prevent="submitCreateAccount">
           <div v-for="(field, index) in fields" :key="index" class="space-y-1">
             <label class="block text-gray-700 mb-1">{{ field.label }}</label>
@@ -26,6 +32,7 @@
 <script setup>
 import { ref } from 'vue'
 import Sidebar from '@/components/EmployeeSidebar.vue' 
+import axios from 'axios'
 
 const fields = [
   { label: 'First Name', placeholder: 'Enter name here', type: 'text', model: 'firstName' },
@@ -35,7 +42,7 @@ const fields = [
   { label: 'Confirm password', placeholder: 'Confirm password', type: 'password', model: 'confirmPassword' },
   { label: 'BSN', placeholder: 'Enter your BSN', type: 'text', model: 'bsn' },
   { label: 'Phone number', placeholder: 'Enter your phone number', type: 'text', model: 'phone' },
-  { label: 'Transfer limit', placeholder: 'Enter transfer limit', type: 'number', model: 'number' }
+  { label: 'Transfer limit', placeholder: 'Enter transfer limit', type: 'number', model: 'transferLimit' }
 ]
 
 const formData = ref({
@@ -46,20 +53,51 @@ const formData = ref({
   confirmPassword: '',
   bsn: '',
   phone: '',
-  transferlimit: ''
+  transferLimit: ''
 })
 
+const successMessage = ref('')
+const errorMessage = ref('')
 
-/*
-function submitCreateAccount() {
-  UserService.createUser(formData.value)
-    .then(response => {
-      alert(response.message)
+async function submitCreateAccount() {
+  // Reset messages
+  successMessage.value = ''
+  errorMessage.value = ''
+  
+  // Validate passwords match
+  if (formData.value.password !== formData.value.confirmPassword) {
+    errorMessage.value = 'Passwords do not match'
+    return
+  }
+  
+  try {
+    console.log('Submitting registration...')
+    const response = await axios.post('/api/users/register', {
+      firstName: formData.value.firstName,
+      lastName: formData.value.lastName,
+      email: formData.value.email,
+      password: formData.value.password,
+      bsnNumber: formData.value.bsn,
+      phoneNumber: formData.value.phone,
+      transferLimit: formData.value.transferLimit
     })
-    .catch(error => {
-      console.error('Failed to create user', error)
-    })
+    
+    successMessage.value = 'User account created successfully'
+    
+    // Reset form
+    formData.value = {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      bsn: '',
+      phone: '',
+      transferLimit: ''
+    }
+  } catch (error) {
+    errorMessage.value = error.response?.data?.error || 'Failed to create user account'
+    console.error('Failed to create user', error)
+  }
 }
-*/
-
 </script>
