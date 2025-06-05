@@ -55,7 +55,6 @@ export default {
     <!-- Customer Info -->
     <div class="mb-4">
       <h4 class="text-success fw-bold">{{ customer.firstName }} {{ customer.lastName }}</h4>
-      <p class="text-muted mb-1">User ID: {{ customer.userId }}</p>
       <p class="text-muted mb-1">Email: {{ customer.email }}</p>
       <p class="text-muted mb-1">Phone: {{ customer.phone }}</p>
       <p class="text-muted">BSN: {{ customer.bsn }}</p>
