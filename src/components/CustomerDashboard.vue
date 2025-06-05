@@ -13,7 +13,7 @@ export default {
         income: 0,
         expense: 0,
       },
-      selectedDateRange: "Apr 22 – May 21, 2024",
+      selectedDateRange: "",
       selectedPeriod: "This Month",
     };
   },
@@ -42,6 +42,20 @@ export default {
       this.balanceInfo.currentBalance = totalBalance;
       this.balanceInfo.income = totalBalance * 1.2; // placeholder logic
       this.balanceInfo.expense = totalBalance * 0.2;
+
+      // Set calendar month date range
+      const now = new Date();
+      const start = new Date(now.getFullYear(), now.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+
+      const formatDate = (date) =>
+        date.toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+
+      this.selectedDateRange = `${formatDate(start)} – ${formatDate(end)}`;
     } catch (error) {
       console.error("Failed to load customer data:", error);
       alert("Error loading dashboard. Please log in again.");
@@ -75,18 +89,18 @@ export default {
             <h3 class="fw-bold">${{ balanceInfo.currentBalance.toFixed(2) }}</h3>
           </div>
           <div class="col">
-            <h6 class="text-muted">Income</h6>
+            <h6 class="text-muted">In</h6>
             <h3 class="fw-bold text-success">${{ balanceInfo.income.toFixed(2) }}</h3>
           </div>
           <div class="col">
-            <h6 class="text-muted">Expense</h6>
+            <h6 class="text-muted">Out</h6>
             <h3 class="fw-bold text-danger">${{ balanceInfo.expense.toFixed(2) }}</h3>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Accounts Display (Side-by-Side) -->
+    <!-- Accounts Display -->
     <section class="mb-5">
       <h4 class="fw-bold mb-3">Accounts</h4>
       <div class="row g-4">
@@ -113,7 +127,7 @@ export default {
 
       <div class="mb-4">
         <div class="d-flex justify-content-between mb-1">
-          <span>Income</span>
+          <span>In</span>
           <span class="fw-bold">${{ balanceInfo.income.toFixed(2) }}</span>
         </div>
         <div class="progress" style="height: 10px;">
@@ -127,7 +141,7 @@ export default {
 
       <div>
         <div class="d-flex justify-content-between mb-1">
-          <span>Expense</span>
+          <span>Out</span>
           <span class="fw-bold">${{ balanceInfo.expense.toFixed(2) }}</span>
         </div>
         <div class="progress" style="height: 10px;">
