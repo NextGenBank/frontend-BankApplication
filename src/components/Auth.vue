@@ -24,7 +24,7 @@ export default {
         bsn: "",
         phone: "",
       },
-      errors: {},
+      errors: {}, // field-specific errors from backend
       error: null,
       isLoading: false,
       success: null,
@@ -92,22 +92,14 @@ export default {
           : "Registration successful! You can now log in.";
 
         if (this.isLogin) {
-          const { role, status } = response.data.user;
-          if (role === "CUSTOMER" && status === "APPROVED") {
-            this.$router.push("/customerDashboard");
-          } else if (role === "CUSTOMER" && status !== "APPROVED") {
-            this.$router.push("/");
-          } else if (role === "EMPLOYEE") {
-            this.$router.push("/employeeDashboard");
-          } else {
-            this.$router.push("/");
-          }
+          this.$router.push("/");
         } else {
-          this.toggleAuthMode();
+          this.toggleAuthMode(); // switch to login form
         }
       } catch (err) {
         if (err.response?.status === 400 && err.response.data) {
           const data = err.response.data;
+
           if (typeof data === "object") {
             this.errors = data;
           } else {
