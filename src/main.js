@@ -1,3 +1,4 @@
+// src/main.js
 import { createApp } from "vue";
 import { createPinia } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
@@ -41,84 +42,30 @@ if (token) {
 
 const routes = [
   // Homepage & Other default information
-  {
-    path: "/",
-    component: Home,
-  },
-  {
-    path: "/about",
-    component: About,
-  },
-  {
-    path: "/auth",
-    component: Auth,
-  },
+  { path: "/", component: Home },
+  { path: "/about", component: About },
+  { path: "/auth", component: Auth },
 
   // Customer
-  {
-    path: "/customerDashboard",
-    component: CustomerDashboard,
-  },
-  {
-    path: "/customerTransferFundsForm",
-    component: CustomerTransferFundsForm,
-  },
-  {
-    path: "/customerProfile",
-    component: CustomerProfileView,
-  },
-  {
-    path: "/customerTransactions",
-    component: CustomerTransactions
-  },
+  { path: "/customerDashboard", component: CustomerDashboard },
+  { path: "/customerTransferFundsForm", component: CustomerTransferFundsForm },
+  { path: "/customerProfile", component: CustomerProfileView },
+  { path: "/customerTransactions", component: CustomerTransactions },
 
   // Employee
-  {
-    path: "/employeeDashboard",
-    component: EmployeeDashboard,
-  },
-  {
-    path: "/employeePending",
-    component: EmployeePendingApprovals,
-  },
-  {
-    path: "/employeeApproved",
-    component: EmployeeApprovedAccounts,
-  },
-  {
-    path: "/employeeTransfer",
-    component: EmployeeTransfer,
-  },
-  {
-    path: "/employeeCreateAccount",
-    component: EmployeeCreateUserAccount,
-  },
-  {
-    path: "/employeeTransactions",
-    component: EmployeeTransactions,
-  },
-  {
-    path: "/employeeCustomers",
-    component: EmployeeCustomers,
-  },
+  { path: "/employeeDashboard", component: EmployeeDashboard },
+  { path: "/employeePending", component: EmployeePendingApprovals },
+  { path: "/employeeApproved", component: EmployeeApprovedAccounts },
+  { path: "/employeeTransfer", component: EmployeeTransfer },
+  { path: "/employeeCreateAccount", component: EmployeeCreateUserAccount },
+  { path: "/employeeTransactions", component: EmployeeTransactions },
+  { path: "/employeeCustomers", component: EmployeeCustomers },
 
   // ATM
-  {
-    path: '/atmdeposit',
-    component: ATM_Deposit
-  },
-  {
-    path: '/atmwithdraw',
-    component: ATM_Withdraw
-  },
-  {
-    path: '/atmwithdraw-bills',
-    component: ATM_WithdrawBills
-  },
-  {
-    path: '/atmdashboard',
-    component: ATM_Dashboard
-  },
+  { path: "/atmdeposit", component: ATM_Deposit },
+  { path: "/atmwithdraw", component: ATM_Withdraw },
+  { path: "/atmwithdraw-bills", component: ATM_WithdrawBills },
+  { path: "/atmdashboard", component: ATM_Dashboard },
 ];
 
 const router = createRouter({
@@ -126,7 +73,7 @@ const router = createRouter({
   routes,
 });
 
-//navigation guard for protected routes
+// Navigation guard for protected routes
 router.beforeEach((to, from, next) => {
   const publicPages = ["/", "/auth", "/about"];
   const authRequired = !publicPages.includes(to.path);

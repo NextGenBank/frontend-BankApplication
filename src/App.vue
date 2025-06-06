@@ -39,6 +39,7 @@ export default {
 
       <div class="navbar-nav ms-auto">
         <template v-if="userStore.isAuthenticated">
+          <RouterLink class="nav-item nav-link" to="/atmdashboard">ATM</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customertransactions">Transactions</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customerprofile">Profile</RouterLink>
