@@ -1,6 +1,8 @@
 <script>
 import axios from "axios";
 import { API_ENDPOINTS } from "@/config";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
 
 export default {
   name: "CustomerDashboard",
@@ -18,6 +20,14 @@ export default {
     };
   },
   async created() {
+    const userStore = useUserStore();
+    const router = useRouter();
+
+    if (userStore.user?.status === "PENDING") {
+      router.replace("/");
+      return;
+    }
+
     try {
       const userRes = await axios.get(API_ENDPOINTS.currentUser);
       const user = userRes.data;
@@ -43,7 +53,6 @@ export default {
       this.balanceInfo.income = totalBalance * 1.2; // placeholder logic
       this.balanceInfo.expense = totalBalance * 0.2;
 
-      // Set calendar month date range
       const now = new Date();
       const start = new Date(now.getFullYear(), now.getMonth(), 1);
       const end = new Date(now.getFullYear(), now.getMonth() + 1, 0);

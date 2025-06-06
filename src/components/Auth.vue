@@ -91,11 +91,12 @@ export default {
           ? "Login successful"
           : "Registration successful! You can now log in.";
 
-        if (this.isLogin) {
+        if (this.isLogin && response.data.user) {
           const { role, status } = response.data.user;
+
           if (role === "CUSTOMER" && status === "APPROVED") {
             this.$router.push("/customerDashboard");
-          } else if (role === "CUSTOMER" && status !== "APPROVED") {
+          } else if (role === "CUSTOMER") {
             this.$router.push("/");
           } else if (role === "EMPLOYEE") {
             this.$router.push("/employeeDashboard");

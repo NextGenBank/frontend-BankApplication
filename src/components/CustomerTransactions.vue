@@ -1,5 +1,8 @@
 <script>
 import axios from "axios";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user";
 
 export default {
   name: "CustomerTransactions",
@@ -23,8 +26,17 @@ export default {
       });
     },
   },
-  mounted() {
-    this.fetchTransactions();
+  async created() {
+    const router = useRouter();
+    const userStore = useUserStore();
+
+    // Redirect if user is PENDING
+    if (userStore.user?.status === "PENDING") {
+      router.replace("/");
+      return;
+    }
+
+    await this.fetchTransactions();
   },
   methods: {
     async fetchTransactions() {
@@ -52,6 +64,7 @@ export default {
   },
 };
 </script>
+
 
 <template>
   <div class="container py-5">

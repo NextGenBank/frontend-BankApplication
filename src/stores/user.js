@@ -1,5 +1,7 @@
 import { defineStore } from "pinia";
 import { setAuthToken } from "@/utils/auth";
+import axios from "axios";
+import { API_ENDPOINTS } from "@/config";
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -17,11 +19,18 @@ export const useUserStore = defineStore("user", {
       localStorage.removeItem("token");
       setAuthToken(null);
     },
-    restoreFromToken() {
+    async restoreFromToken() {
       const token = localStorage.getItem("token");
       if (token) {
-        setAuthToken(token);
-        this.isAuthenticated = true;
+        try {
+          setAuthToken(token);
+          const res = await axios.get(API_ENDPOINTS.currentUser);
+          this.user = res.data;
+          this.isAuthenticated = true;
+        } catch (error) {
+          console.error("Failed to restore session:", error);
+          this.logout();
+        }
       }
     },
   },

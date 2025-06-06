@@ -1,10 +1,21 @@
 <script>
 import { useUserStore } from "@/stores/user";
+import { onMounted, ref } from "vue";
+import Loading from "@/components/Loading.vue"; 
 
 export default {
+  components: { Loading },
   setup() {
     const userStore = useUserStore();
-    return { userStore };
+    const isLoaded = ref(false);
+
+    onMounted(() => {
+      setTimeout(() => {
+        isLoaded.value = true;
+      }, 100); // slight delay to ensure userStore is ready
+    });
+
+    return { userStore, isLoaded };
   },
 };
 </script>
@@ -13,8 +24,12 @@ export default {
   <div class="container py-5 text-center">
     <h1 class="mb-4 fw-bold">Welcome to NextGenBank!</h1>
 
+    <!-- Use loading spinner -->
+    <Loading v-if="!isLoaded" />
+
+    <!-- Show PENDING message -->
     <div
-      v-if="userStore.user?.role === 'CUSTOMER' && userStore.user?.status === 'PENDING'"
+      v-else-if="userStore.user?.role === 'CUSTOMER' && userStore.user?.status === 'PENDING'"
       class="card mx-auto shadow-sm"
       style="max-width: 500px; border-radius: 15px; background-color: #f0f9ff;"
     >
