@@ -3,20 +3,58 @@
     <div>
       <h2 class="text-white text-2xl font-bold mb-6">Overview</h2>
       <ul class="space-y-3">
-        <li><router-link to="/employeedashboard" class="sidebar-link" active-class="active-link">Dashboard</router-link></li>
-        <li><router-link to="/employeetransactions" class="sidebar-link" active-class="active-link">Transactions</router-link></li>
-        <li><router-link to="/employeetransfer" class="sidebar-link" active-class="active-link">Transfer</router-link></li>
-        <li><router-link to="/employeecustomers" class="sidebar-link" active-class="active-link">Customers</router-link></li>
-        <li><router-link to="/employeecreateaccount" class="sidebar-link" active-class="active-link" exact>Create account</router-link></li>
-        <li><router-link to="/employeepending" class="sidebar-link" active-class="active-link">Sign ups</router-link></li>
-        <li><router-link to="/employeeapproved" class="sidebar-link" active-class="active-link">Accounts</router-link></li>
+        <li><router-link to="/employeedashboard" class="sidebar-link" active-class="active-link">Dashboard</router-link>
+        </li>
+        <li><router-link to="/employeetransactions" class="sidebar-link"
+            active-class="active-link">Transactions</router-link></li>
+        <li><router-link to="/employeetransfer" class="sidebar-link" active-class="active-link">Transfer</router-link>
+        </li>
+        <li><router-link to="/employeecustomers" class="sidebar-link" active-class="active-link">Customers</router-link>
+        </li>
+        <li><router-link to="/employeecreateaccount" class="sidebar-link" active-class="active-link" exact>Create
+            account</router-link></li>
+        <li><router-link to="/employeepending" class="sidebar-link" active-class="active-link">Pending Accounts</router-link>
+        </li>
+        <li><router-link to="/employeeapproved" class="sidebar-link" active-class="active-link">Approved Accounts</router-link>
+        </li>
+        <li><router-link to="/employeerejected" class="sidebar-link" active-class="active-link">Rejected Accounts</router-link>
+        </li>
       </ul>
     </div>
-    <button class="bg-red-600 text-white py-2 px-5 rounded mt-10">Log out</button>
+    <button class="bg-red-600 text-white py-2 px-5 rounded mt-10" @click="handleLogout">Logout</button>
+
+
   </aside>
 </template>
 
-<script setup>
+<script>
+import { useUserStore } from "@/stores/user";
+import { useRouter } from "vue-router";
+import { onMounted } from "vue";
+
+export default {
+  setup() {
+    const userStore = useUserStore();
+    const router = useRouter();
+
+    onMounted(() => {
+      const token = localStorage.getItem("token");
+      if (token && !userStore.isAuthenticated) {
+        userStore.restoreFromToken(); // ensure full user object is restored
+      }
+    });
+
+    const handleLogout = () => {
+      userStore.logout();
+      router.push("/auth");
+    };
+
+    return {
+      userStore,
+      handleLogout,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -29,11 +67,15 @@
   text-align: left;
   transition: background-color 0.3s, color 0.3s;
 }
+
 .sidebar-link:hover {
-  background-color: #86efac; /* Light green on hover */
+  background-color: #86efac;
+  /* Light green on hover */
 }
+
 .active-link {
-  background-color: #16a34a; /* Darker green */
+  background-color: #16a34a;
+  /* Darker green */
   color: white;
 }
 </style>

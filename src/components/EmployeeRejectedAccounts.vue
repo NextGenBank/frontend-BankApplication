@@ -7,7 +7,7 @@ import EmployeeSidebar from './EmployeeSidebar.vue';
   <div class="flex min-h-screen">
     <EmployeeSidebar />
     <div class="flex-1">
-      <EmployeeStatusAccounts status="APPROVED" title="Approved Accounts" :showActions="false" />
+      <EmployeeStatusAccounts status="REJECTED" title="Rejected Users" :showActions="false" />
     </div>
   </div>
 </template>
