@@ -25,7 +25,7 @@ import EmployeeCreateUserAccount from './components/EmployeeCreateUserAccount.vu
 import EmployeeDashboard from './components/EmployeeDashboard.vue';
 import EmployeeTransactions from './components/EmployeeTransactions.vue';
 import EmployeeTransfer from './components/EmployeeTransfer.vue';
-import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
+import EmployeePendingApprovals from "./components/EmployeePendingAccounts.vue";
 import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
 import EmployeeCustomers from "./components/EmployeeCustomers.vue";
 
