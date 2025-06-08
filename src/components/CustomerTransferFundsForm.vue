@@ -1,5 +1,6 @@
 <script>
-import axios from 'axios';
+import axios from 'axios'
+import { API_ENDPOINTS } from '@/config.js'
 
 export default {
     data() {
@@ -10,28 +11,37 @@ export default {
             },
             message: '',
             success: false
-        };
+        }
     },
     methods: {
+        resetForm() {
+            this.form.amount = null;
+            this.form.from = 'CHECKING';
+        },
         async submitForm() {
             try {
-                await axios.post('/transactions/switch', this.form);
-                this.message = 'Transfer completed successfully.';
+                const response = await axios.post(API_ENDPOINTS.switchFunds(), {
+                    from: this.form.from,
+                    amount: this.form.amount
+                }, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                });
+
+                const { checkingBalance, savingsBalance } = response.data;
+
+                this.message = `Transfer completed successfully. Updated balances - Checking: €${checkingBalance.toFixed(2)}, Savings: €${savingsBalance.toFixed(2)}`;
                 this.success = true;
                 this.resetForm();
-            } catch (err) {
-                this.message = err.response?.data?.message || 'Transfer failed.';
+            } catch (error) {
+                this.message = error.response?.data?.message || 'Transfer failed.';
                 this.success = false;
             }
-        },
-        resetForm() {
-            this.form = { from: 'CHECKING', amount: null };
-            this.message = '';
         }
     }
-};
+}
 </script>
-
 
 <template>
     <div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 space-y-4">

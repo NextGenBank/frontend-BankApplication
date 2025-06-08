@@ -54,7 +54,16 @@ export default {
             </div>
             <div class="col-md-8">
                 <AccountBalance :accounts="accounts" />
+
+                <div class="mt-4 text-end">
+                    <router-link to="/CustomerTransferFundsForm">
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                            Switch Funds
+                        </button>
+                    </router-link>
+                </div>
             </div>
+
         </div>
     </div>
 
