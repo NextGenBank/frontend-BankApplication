@@ -12,7 +12,7 @@
               <th class="pb-2">User initiating</th>
               <th class="pb-2">Time stamp</th>
               <th class="pb-2">Transfer amount</th>
-              <th class="pb-2">Status</th>
+              <th class="pb-2">Type</th>
             </tr>
           </thead>
           <tbody>
@@ -23,10 +23,10 @@
               <td class="py-3">{{ transaction.timestamp }}</td>
               <td class="py-3 font-semibold"
                   :class="transaction.amount > 0 ? 'text-green-600' : 'text-red-600'">
-                {{ transaction.amount > 0 ? '+' : '' }}{{ transaction.amount.toLocaleString() }},00
+                {{ formatAmount(transaction.amount) }}
               </td>
               <td class="py-3">
-                <span class="bg-gray-300 text-gray-700 px-4 py-1 rounded-full text-sm">Pending</span>
+                {{ transaction.transactionType }}
               </td>
             </tr>
           </tbody>
@@ -37,45 +37,29 @@
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import Sidebar from '@/components/EmployeeSidebar.vue'
+import axios from 'axios'
 
-const transactions = [
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Customer',
-    timestamp: '13.03.2026 – 09:39',
-    amount: 10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Employee',
-    timestamp: '13.03.2026 – 09:39',
-    amount: -10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Employee',
-    timestamp: '13.03.2026 – 09:39',
-    amount: -10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Customer',
-    timestamp: '13.03.2026 – 09:39',
-    amount: 10000
-  },
-  {
-    toAccount: 'Name',
-    fromAccount: 'Name',
-    userInitiating: 'Customer',
-    timestamp: '13.03.2026 – 09:39',
-    amount: -10000
+const transactions = ref([])
+
+onMounted(async () => {
+  try {
+    console.log('Fetching transactions...')
+    const response = await axios.get('/api/transactions')
+    console.log('Response:', response)
+    transactions.value = response.data
+  } catch (error) {
+    console.error('Failed to fetch transactions', error)
+    alert('Error fetching transactions: ' + (error.response?.data?.error || error.message))
   }
-]
+})
+
+function formatAmount(amount) {
+  if (!amount) return '0.00'
+  const num = parseFloat(amount)
+  return (num > 0 ? '+' : '') + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
 </script>
 
 <style scoped>

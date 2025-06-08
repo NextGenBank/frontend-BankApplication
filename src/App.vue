@@ -11,7 +11,7 @@ export default {
     onMounted(() => {
       const token = localStorage.getItem("token");
       if (token && !userStore.isAuthenticated) {
-        userStore.isAuthenticated = true;
+        userStore.restoreFromToken(); // ensure full user object is restored
       }
     });
 
@@ -29,7 +29,6 @@ export default {
 </script>
 
 <template>
-  <!-- Hide navbar if user is EMPLOYEE (they use sidebar instead) -->
   <nav
     class="navbar navbar-expand-lg navbar-light bg-light"
     v-if="!userStore.user || userStore.user.role !== 'EMPLOYEE'"
@@ -38,10 +37,14 @@ export default {
       <RouterLink to="/" class="navbar-brand">NextGenBank</RouterLink>
 
       <div class="navbar-nav ms-auto">
-        <template v-if="userStore.isAuthenticated">
+        <template v-if="userStore.isAuthenticated && userStore.user?.status === 'APPROVED'">
           <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customertransactions">Transactions</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customerprofile">Profile</RouterLink>
+          <button class="nav-item nav-link btn btn-link" @click="handleLogout">Logout</button>
+        </template>
+
+        <template v-else-if="userStore.isAuthenticated">
           <button class="nav-item nav-link btn btn-link" @click="handleLogout">Logout</button>
         </template>
 

@@ -6,6 +6,8 @@ import App from "./App.vue";
 import { getAuthToken, setAuthToken } from "./utils/auth";
 import './utils/axios'; // <-- activates the interceptors globally
 import { useUserStore } from "@/stores/user";
+import axios from "axios";
+import { API_ENDPOINTS } from "@/config";
 
 // Import components
 import Home from "./components/Home.vue";
@@ -23,9 +25,9 @@ import EmployeeCreateUserAccount from './components/EmployeeCreateUserAccount.vu
 import EmployeeDashboard from './components/EmployeeDashboard.vue';
 import EmployeeTransactions from './components/EmployeeTransactions.vue';
 import EmployeeTransfer from './components/EmployeeTransfer.vue';
-import EmployeePendingApprovals from "./components/EmployeePendingAccounts.vue";
+import EmployeePendingApprovals from "./components/EmployeePendingApprovals.vue";
 import EmployeeApprovedAccounts from "./components/EmployeeApprovedAccounts.vue";
-import EmployeeRejectedAccounts from "./components/EmployeeRejectedAccounts.vue";
+import EmployeeCustomers from "./components/EmployeeCustomers.vue";
 
 // ATM
 import ATM_Dashboard from './components/ATM/Dashboard.vue';
@@ -84,10 +86,6 @@ const routes = [
   {
     path: "/employeeApproved",
     component: EmployeeApprovedAccounts,
-  }, 
-  {
-    path: "/employeeRejected",
-    component: EmployeeRejectedAccounts,
   },
   {
     path: "/employeeTransfer",
@@ -100,6 +98,10 @@ const routes = [
   {
     path: "/employeeTransactions",
     component: EmployeeTransactions,
+  },
+  {
+    path: "/employeeCustomers",
+    component: EmployeeCustomers,
   },
 
   // ATM
@@ -126,25 +128,53 @@ const router = createRouter({
   routes,
 });
 
-//navigation guard for protected routes
-router.beforeEach((to, from, next) => {
+// navigation guard for protected routes
+router.beforeEach(async (to, from, next) => {
   const publicPages = ["/", "/auth", "/about"];
   const authRequired = !publicPages.includes(to.path);
-  const isLoggedIn = !!localStorage.getItem("token");
+  const token = getAuthToken();
 
-  if (authRequired && !isLoggedIn) {
+  const userStore = useUserStore();
+
+  // Load user if token exists and not already loaded
+  if (token && !userStore.user) {
+    try {
+      const res = await axios.get(API_ENDPOINTS.currentUser);
+      userStore.setUser(res.data);
+    } catch (err) {
+      userStore.logout();
+      return next("/auth");
+    }
+  }
+
+  // Block unauthenticated access
+  if (authRequired && !token) {
     return next("/auth");
+  }
+
+  // Block pending customers from customer-only pages
+  const customerOnlyRoutes = [
+    "/customerDashboard",
+    "/customerTransactions",
+    "/customerProfile",
+    "/customerTransferFundsForm",
+  ];
+
+  const user = userStore.user;
+
+  if (
+    user &&
+    user.role === "CUSTOMER" &&
+    user.status === "PENDING" &&
+    customerOnlyRoutes.includes(to.path)
+  ) {
+    return next("/"); // redirect to welcome page
   }
 
   next();
 });
 
 const app = createApp(App);
-
 app.use(router);
 app.use(createPinia());
-
-const userStore = useUserStore();
-userStore.restoreFromToken();
-
 app.mount("#app");
