@@ -13,9 +13,11 @@
         </li>
         <li><router-link to="/employeecreateaccount" class="sidebar-link" active-class="active-link" exact>Create
             account</router-link></li>
-        <li><router-link to="/employeepending" class="sidebar-link" active-class="active-link">Sign ups</router-link>
+        <li><router-link to="/employeepending" class="sidebar-link" active-class="active-link">Pending Accounts</router-link>
         </li>
-        <li><router-link to="/employeeapproved" class="sidebar-link" active-class="active-link">Accounts</router-link>
+        <li><router-link to="/employeeapproved" class="sidebar-link" active-class="active-link">Approved Accounts</router-link>
+        </li>
+        <li><router-link to="/employeerejected" class="sidebar-link" active-class="active-link">Rejected Accounts</router-link>
         </li>
       </ul>
     </div>
