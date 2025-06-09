@@ -94,8 +94,8 @@
                     <td class="py-3">{{ transaction.fromAccount }}</td>
                     <td class="py-3">{{ transaction.timestamp }}</td>
                     <td class="py-3 font-semibold"
-                        :class="transaction.amount > 0 ? 'text-green-600' : 'text-red-600'">
-                      {{ formatAmount(transaction.amount) }}
+                        :class="isTransactionOutgoing(transaction, selectedCustomer.userId) ? 'text-red-600' : 'text-green-600'">
+                      {{ isTransactionOutgoing(transaction, selectedCustomer.userId) ? '-' : '+' }}{{ formatAbsoluteAmount(transaction.amount) }}
                     </td>
                     <td class="py-3">
                       {{ transaction.transactionType }}
@@ -124,13 +124,16 @@
                       <p class="text-xs text-gray-500">ID: {{ account.id || 'N/A' }}</p>
                     </div>
                     <div>
-                      <p>Current Transfer Limit: {{ formatAmount(account.absoluteTransferLimit) }}</p>
+                      <p>Daily Transfer Limit: {{ formatAmount(account.absoluteTransferLimit) }}</p>
+                      <p class="text-xs text-gray-500">
+                        Today's transfers: {{ formatAmount(account.dailyTransferAmount || 0) }}
+                      </p>
                     </div>
                   </div>
                   
                   <div class="flex items-end gap-4">
                     <div class="flex-1">
-                      <label class="block text-gray-700 mb-1">New Absolute Transfer Limit</label>
+                      <label class="block text-gray-700 mb-1">New Daily Transfer Limit</label>
                       <input 
                         type="number" 
                         v-model="limitData[account.IBAN || account.iban]" 
@@ -176,29 +179,85 @@ const customerAccountsMap = reactive({})
 onMounted(async () => {
   try {
     console.log('Fetching customers...')
-    const response = await axios.get('/api/employees/customers')
-    console.log('Response:', response)
-    customers.value = response.data
     
-    // Fetch accounts for each customer
-    fetchAllCustomerAccounts()
+    // Fetch customers with full URL
+    const customersUrl = axios.defaults.baseURL + '/api/employees/customers'
+    console.log('Fetching from URL:', customersUrl)
+    const customersResponse = await axios.get(customersUrl)
+    console.log('Customers Response:', customersResponse)
+    
+    if (Array.isArray(customersResponse.data)) {
+      customers.value = customersResponse.data
+    } else if (customersResponse.data && typeof customersResponse.data === 'object') {
+      // Handle case where data might be wrapped in an object
+      customers.value = customersResponse.data.content || customersResponse.data.customers || []
+    } else {
+      console.error('Unexpected customers response format:', customersResponse.data)
+      customers.value = []
+    }
+    
+    // Get accounts for each customer
+    if (customers.value.length > 0) {
+      await fetchAllCustomerAccounts()
+    }
+    
+    console.log('Initialization complete')
   } catch (error) {
-    console.error('Failed to fetch customers', error)
-    alert('Error fetching customers: ' + (error.response?.data?.error || error.message))
+    console.error('Failed to fetch customer data', error)
+    alert('Error fetching customer data: ' + (error.response?.data?.error || error.message))
   }
 })
 
-// Fetch accounts for all customers
+// Fetch accounts for all customers more efficiently
 async function fetchAllCustomerAccounts() {
-  for (const customer of customers.value) {
-    fetchCustomerAccounts(customer.userId)
+  try {
+    console.log('Fetching all customer accounts in batch...')
+    // Get all accounts in a single request with full URL
+    const accountsUrl = axios.defaults.baseURL + '/api/accounts'
+    console.log('Fetching accounts from URL:', accountsUrl)
+    const response = await axios.get(accountsUrl)
+    console.log('Accounts response:', response)
+    
+    // Create a map to organize accounts by customer ID
+    const accountMap = {}
+    
+    // Check if response.data is an array
+    let accountsArray = []
+    if (Array.isArray(response.data)) {
+      accountsArray = response.data
+    } else if (response.data && typeof response.data === 'object') {
+      accountsArray = response.data.content || response.data.accounts || []
+    }
+    
+    // Process all accounts
+    accountsArray.forEach(account => {
+      if (account.customer && account.customer.userId) {
+        const customerId = account.customer.userId
+        if (!accountMap[customerId]) {
+          accountMap[customerId] = []
+        }
+        accountMap[customerId].push(account)
+      }
+    })
+    
+    // Update the reactive object just once with all customer accounts
+    console.log('Updating customer accounts map...')
+    Object.keys(accountMap).forEach(customerId => {
+      customerAccountsMap[customerId] = accountMap[customerId]
+    })
+    
+    console.log('All customer accounts loaded successfully')
+  } catch (error) {
+    console.error('Failed to fetch accounts for customers', error)
   }
 }
 
 // Fetch accounts for a specific customer
 async function fetchCustomerAccounts(customerId) {
   try {
-    const response = await axios.get(`/api/accounts/customer/${customerId}`)
+    const accountsUrl = axios.defaults.baseURL + `/api/accounts/customer/${customerId}`
+    console.log(`Fetching accounts for customer ${customerId} from URL:`, accountsUrl)
+    const response = await axios.get(accountsUrl)
     customerAccountsMap[customerId] = response.data
   } catch (error) {
     console.error(`Failed to fetch accounts for customer ${customerId}`, error)
@@ -213,16 +272,47 @@ async function viewCustomerTransactions(customerId) {
     selectedCustomer.value = customers.value.find(c => c.userId === customerId)
     showModal.value = true
     
-    // Load transactions
     loadingTransactions.value = true
-    const transactionsResponse = await axios.get(`/api/transactions/customer/${customerId}`)
-    customerTransactions.value = transactionsResponse.data
-    loadingTransactions.value = false
-    
-    // Load accounts
     loadingAccounts.value = true
-    const accountsResponse = await axios.get(`/api/accounts/customer/${customerId}`)
-    customerAccounts.value = accountsResponse.data
+    
+    // Create full URLs for API endpoints
+    const txUrl = axios.defaults.baseURL + `/api/transactions/customer/${customerId}`
+    const acctUrl = axios.defaults.baseURL + `/api/accounts/customer/${customerId}`
+    
+    console.log('Fetching customer transactions from:', txUrl)
+    console.log('Fetching customer accounts from:', acctUrl)
+    
+    // Use Promise.all to fetch transactions and accounts in parallel
+    const [transactionsResponse, accountsResponse] = await Promise.all([
+      axios.get(txUrl),
+      axios.get(acctUrl)
+    ])
+    
+    console.log('Transactions response:', transactionsResponse)
+    console.log('Accounts response:', accountsResponse)
+    
+    // Process transactions - filter out zero-amount transactions
+    if (Array.isArray(transactionsResponse.data)) {
+      customerTransactions.value = transactionsResponse.data
+        .filter(t => t.amount !== null && parseFloat(t.amount) !== 0)
+    } else if (transactionsResponse.data && typeof transactionsResponse.data === 'object') {
+      const txArray = transactionsResponse.data.content || transactionsResponse.data.transactions || []
+      customerTransactions.value = Array.isArray(txArray) 
+        ? txArray.filter(t => t.amount !== null && parseFloat(t.amount) !== 0) 
+        : []
+    } else {
+      customerTransactions.value = []
+    }
+    
+    // Process accounts
+    if (Array.isArray(accountsResponse.data)) {
+      customerAccounts.value = accountsResponse.data
+    } else if (accountsResponse.data && typeof accountsResponse.data === 'object') {
+      const acctArray = accountsResponse.data.content || accountsResponse.data.accounts || []
+      customerAccounts.value = Array.isArray(acctArray) ? acctArray : []
+    } else {
+      customerAccounts.value = []
+    }
     
     // Initialize limit data
     customerAccounts.value.forEach(account => {
@@ -235,11 +325,15 @@ async function viewCustomerTransactions(customerId) {
       }
     })
     
+    loadingTransactions.value = false
     loadingAccounts.value = false
   } catch (error) {
     console.error('Failed to fetch customer data', error)
     loadingTransactions.value = false
     loadingAccounts.value = false
+    customerAccounts.value = []
+    customerTransactions.value = []
+    alert('Error fetching customer details: ' + (error.response?.data?.error || error.message))
   }
 }
 
@@ -268,13 +362,17 @@ async function updateTransferLimit(accountIban, index) {
     // Ensure limit is a positive number before sending
     const newLimit = parseFloat(limitData.value[accountIban]);
     if (isNaN(newLimit) || newLimit < 0) {
-      throw new Error('Transfer limit must be a positive number');
+      throw new Error('Daily transfer limit must be a positive number');
     }
     
-    console.log('Updating transfer limit for account:', account);
-    console.log('Account IBAN:', accountIban, 'New transfer limit:', newLimit);
+    console.log('Updating daily transfer limit for account:', account);
+    console.log('Account IBAN:', accountIban, 'New daily transfer limit:', newLimit);
     
-    await axios.put('/api/accounts/limit', {
+    // Use full URL for the API call
+    const limitUrl = axios.defaults.baseURL + '/api/accounts/limit'
+    console.log('Updating limit at URL:', limitUrl)
+    
+    await axios.put(limitUrl, {
       accountIban: accountIban,
       absoluteTransferLimit: newLimit
     })
@@ -283,10 +381,10 @@ async function updateTransferLimit(accountIban, index) {
     const currentAccount = customerAccounts.value[index];
     currentAccount.absoluteTransferLimit = newLimit;
     
-    alert('Transfer limit updated successfully')
+    alert('Daily transfer limit updated successfully')
   } catch (error) {
-    console.error('Failed to update transfer limit', error)
-    alert('Failed to update transfer limit: ' + (error.response?.data?.error || error.message))
+    console.error('Failed to update daily transfer limit', error)
+    alert('Failed to update daily transfer limit: ' + (error.response?.data?.error || error.message))
   }
 }
 
@@ -294,6 +392,32 @@ function formatAmount(amount) {
   if (!amount) return '0.00'
   const num = parseFloat(amount)
   return (num > 0 ? '+' : '') + num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+function formatAbsoluteAmount(amount) {
+  if (!amount) return '0.00'
+  const num = Math.abs(parseFloat(amount))
+  return num.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+}
+
+// Determine if a transaction is outgoing for a specific customer
+function isTransactionOutgoing(transaction, customerId) {
+  // Check if this customer is the sender by looking at the fromAccount property
+  if (transaction.fromAccount) {
+    // Get the account's customer by looking for customer.userId property on the account
+    // In the case of DTOs, we need to get the customer based on account ID
+    const accountData = customerAccountsMap[customerId] || []
+    
+    // Check if any of the customer's accounts match the fromAccount
+    for (const account of accountData) {
+      const accountId = account.IBAN || account.iban
+      if (accountId === transaction.fromAccount) {
+        return true // This customer's account is sending money out
+      }
+    }
+  }
+  
+  return false // Not outgoing (either incoming or not related to this customer)
 }
 
 function validateLimit(accountIban) {

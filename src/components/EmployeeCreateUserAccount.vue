@@ -72,17 +72,22 @@ async function submitCreateAccount() {
   
   try {
     console.log('Submitting registration...')
-    const response = await axios.post('/api/users/register', {
+    // Use the correct endpoint from RegisterController
+    const url = axios.defaults.baseURL + '/api/user/register'
+    console.log('Registering user at URL:', url)
+    
+    const response = await axios.post(url, {
       firstName: formData.value.firstName,
       lastName: formData.value.lastName,
       email: formData.value.email,
       password: formData.value.password,
-      bsnNumber: formData.value.bsn,
-      phoneNumber: formData.value.phone,
-      transferLimit: formData.value.transferLimit
+      bsn: formData.value.bsn,
+      phone: formData.value.phone
+      // Transfer limit will be handled in the backend
     })
     
-    successMessage.value = 'User account created successfully'
+    console.log('Registration response:', response)
+    successMessage.value = 'User account created successfully and will appear in the pending tab'
     
     // Reset form
     formData.value = {
@@ -95,9 +100,21 @@ async function submitCreateAccount() {
       phone: '',
       transferLimit: ''
     }
+    
+    // Redirect to pending tab after 2 seconds
+    setTimeout(() => {
+      window.location.href = '/employeePending'
+    }, 2000)
+    
   } catch (error) {
-    errorMessage.value = error.response?.data?.error || 'Failed to create user account'
     console.error('Failed to create user', error)
+    if (error.response?.data?.error) {
+      errorMessage.value = error.response.data.error
+    } else if (error.message) {
+      errorMessage.value = error.message
+    } else {
+      errorMessage.value = 'Failed to create user account'
+    }
   }
 }
 </script>
