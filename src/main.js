@@ -20,6 +20,7 @@ import CustomerProfileView from "./components/CustomerProfileView.vue";
 import CustomerTransferFundsForm from "./components/CustomerTransferFundsForm.vue";
 import CustomerDashboard from "./components/CustomerDashboard.vue";
 import CustomerTransactions from "./components/CustomerTransactions.vue";
+import IbanLookup from './components/IbanLookup.vue';
 
 // Employee
 import EmployeeCreateUserAccount from './components/EmployeeCreateUserAccount.vue';
@@ -54,6 +55,8 @@ const routes = [
   { path: "/customerTransferFundsForm", component: CustomerTransferFundsForm },
   { path: "/customerProfile", component: CustomerProfileView },
   { path: "/customerTransactions", component: CustomerTransactions },
+  { path: "/lookup", component: IbanLookup },
+
 
   // Employee
   { path: "/employeeDashboard", component: EmployeeDashboard },

@@ -6,6 +6,8 @@ export const API_ENDPOINTS = {
   currentUser: `${API_BASE_URL}/api/user/me`,
   myAccounts: `${API_BASE_URL}/api/accounts/my`,
   lookupIBAN: `${API_BASE_URL}/api/accounts/lookup`,
+  lookupAllIbans: `${API_BASE_URL}/api/accounts/all-iban-users`,
+
 
   // ATM endpoints
   deposit:  `${API_BASE_URL}/api/atm/deposit`,
