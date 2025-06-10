@@ -41,6 +41,7 @@ export default {
           <RouterLink class="nav-item nav-link" to="/atmdashboard">ATM</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customerdashboard">Dashboard</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customertransactions">Transactions</RouterLink>
+          <RouterLink class="nav-item nav-link" to="/lookup">IBAN Lookup</RouterLink>
           <RouterLink class="nav-item nav-link" to="/customerprofile">Profile</RouterLink>
           <button class="nav-item nav-link btn btn-link" @click="handleLogout">Logout</button>
         </template>

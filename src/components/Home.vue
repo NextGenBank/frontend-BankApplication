@@ -27,7 +27,7 @@ export default {
     <!-- Use loading spinner -->
     <Loading v-if="!isLoaded" />
 
-    <!-- Show PENDING message -->
+    <!-- PENDING message -->
     <div
       v-else-if="userStore.user?.role === 'CUSTOMER' && userStore.user?.status === 'PENDING'"
       class="card mx-auto shadow-sm"
@@ -37,6 +37,20 @@ export default {
         <h5 class="card-title text-primary fw-bold">Account Pending Approval</h5>
         <p class="card-text">
           Your account is currently under review. Please wait until an employee approves it.
+        </p>
+      </div>
+    </div>
+
+    <!-- REJECTED message -->
+    <div
+      v-else-if="userStore.user?.role === 'CUSTOMER' && userStore.user?.status === 'REJECTED'"
+      class="card mx-auto shadow-sm"
+      style="max-width: 500px; border-radius: 15px; background-color: #fff3f3;"
+    >
+      <div class="card-body">
+        <h5 class="card-title text-danger fw-bold">Account Rejected</h5>
+        <p class="card-text">
+          We're sorry, but your account application has been rejected. Please contact support for more information.
         </p>
       </div>
     </div>
