@@ -5,43 +5,37 @@ import { API_ENDPOINTS } from '@/config.js'
 export default {
     data() {
         return {
-            form: {
-                from: 'CHECKING',
-                amount: null
-            },
+            form: { from: 'CHECKING', amount: null },
             message: '',
             success: false
         }
     },
     methods: {
         resetForm() {
-            this.form.amount = null;
-            this.form.from = 'CHECKING';
+            this.form.from = 'CHECKING'
+            this.form.amount = null
         },
         async submitForm() {
             try {
-                const response = await axios.post(API_ENDPOINTS.switchFunds(), {
+                const resp = await axios.post(API_ENDPOINTS.switchFunds(), {
                     from: this.form.from,
                     amount: this.form.amount
                 }, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                });
-
-                const { checkingBalance, savingsBalance } = response.data;
-
-                this.message = `Transfer completed successfully. Updated balances - Checking: €${checkingBalance.toFixed(2)}, Savings: €${savingsBalance.toFixed(2)}`;
-                this.success = true;
-                this.resetForm();
-            } catch (error) {
-                this.message = error.response?.data?.message || 'Transfer failed.';
-                this.success = false;
+                    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                })
+                const { checkingBalance, savingsBalance } = resp.data
+                this.message = `Transfer completed! Balances — Checking: €${checkingBalance.toFixed(2)}, Savings: €${savingsBalance.toFixed(2)}`
+                this.success = true
+                this.resetForm()
+            } catch (err) {
+                this.message = err.response?.data?.message || 'Transfer failed.'
+                this.success = false
             }
         }
     }
 }
 </script>
+
 
 <template>
     <div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 space-y-4">

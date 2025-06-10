@@ -8,12 +8,13 @@ export const API_ENDPOINTS = {
   lookupIBAN: `${API_BASE_URL}/api/accounts/lookup`,
 
   // ATM endpoints
-  deposit:  `${API_BASE_URL}/api/atm/deposit`,
+  deposit: `${API_BASE_URL}/api/atm/deposit`,
   withdraw: `${API_BASE_URL}/api/atm/withdraw`,
 
   // Employee endpoints
   usersByStatus: status => `${API_BASE_URL}/api/employees/status?status=${status}`,
   approveUser: id => `${API_BASE_URL}/api/employees/approve/${id}`,
   rejectUser: id => `${API_BASE_URL}/api/employees/reject/${id}`,
-  switchFunds: () => `${API_BASE_URL}/api/transactions/switch`
+  switchFunds: () => `${API_BASE_URL}/api/transactions/switch`,
+  externalTransfer: () => `${API_BASE_URL}/api/transactions/external-transfer`
 };

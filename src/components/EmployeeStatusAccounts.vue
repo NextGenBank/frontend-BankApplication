@@ -32,36 +32,40 @@ const loadUsers = async () => {
         const response = await axios.get(API_ENDPOINTS.usersByStatus(props.status))
         users.value = response.data
     } catch (err) {
-        errorMessage.value = `Failed to load ${props.status.toLowerCase()} users.`
+        errorMessage.value = err.response?.data?.message || `Failed to load ${props.status.toLowerCase()} users.`
     } finally {
         loading.value = false
     }
 }
 
 async function approve(userId) {
+    successMessage.value = ''
+    errorMessage.value = ''
     try {
         await axios.put(API_ENDPOINTS.approveUser(userId))
         successMessage.value = 'User approved successfully.'
         await loadUsers()
-    } catch {
-        errorMessage.value = 'Failed to approve user.'
+    } catch (err) {
+        errorMessage.value = err.response?.data?.message || 'Failed to approve user.'
     }
 }
 
 async function reject(userId) {
+    successMessage.value = ''
+    errorMessage.value = ''
     try {
         await axios.put(API_ENDPOINTS.rejectUser(userId))
         successMessage.value = 'User rejected successfully.'
         await loadUsers()
-    } catch {
-        errorMessage.value = 'Failed to reject user.'
+    } catch (err) {
+        errorMessage.value = err.response?.data?.message || 'Failed to reject user.'
     }
 }
 
 onMounted(loadUsers)
-
 watch(() => props.status, loadUsers)
 </script>
+
 
 <template>
     <div class="container py-5">

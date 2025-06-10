@@ -18,6 +18,7 @@ import Auth from "./components/Auth.vue";
 // Customer
 import CustomerProfileView from "./components/CustomerProfileView.vue";
 import CustomerTransferFundsForm from "./components/CustomerTransferFundsForm.vue";
+import CustomerTransferToIbanForm from "./components/CustomerTransferToIbanForm.vue";
 import CustomerDashboard from "./components/CustomerDashboard.vue";
 import CustomerTransactions from "./components/CustomerTransactions.vue";
 
@@ -52,6 +53,7 @@ const routes = [
   // Customer
   { path: "/customerDashboard", component: CustomerDashboard },
   { path: "/customerTransferFundsForm", component: CustomerTransferFundsForm },
+  { path: "/CustomerTransferToIbanForm", component: CustomerTransferToIbanForm },
   { path: "/customerProfile", component: CustomerProfileView },
   { path: "/customerTransactions", component: CustomerTransactions },
 
