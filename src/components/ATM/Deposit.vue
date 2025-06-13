@@ -1,4 +1,3 @@
-<!-- src/components/ATM/Deposit.vue -->
 <template>
   <div class="card p-4" style="width: 360px; margin: 0 auto; margin-top: 50px;">
     <h2 class="text-success mb-4">Deposit</h2>
@@ -26,7 +25,7 @@ import { API_ENDPOINTS } from "@/config";
 export default {
   data() {
     return {
-      accounts: [],   
+      accounts: [],
       account: "",
       amount: null,
     };
@@ -37,7 +36,6 @@ export default {
       const response = await axios.get(API_ENDPOINTS.myAccounts, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      // Предположим, что API возвращает массив вида [{ accountType: "...", balance: "...", iban: "..." }, ...]
       this.accounts = response.data;
     } catch (error) {
       console.error("Не удалось загрузить счета:", error);
@@ -52,17 +50,18 @@ export default {
       try {
         const token = localStorage.getItem("token");
         const payload = {
+          transactionType: "DEPOSIT",
           toIban: this.account,
           amount: this.amount
         };
-        await axios.post(API_ENDPOINTS.deposit, payload, {
+        await axios.post(API_ENDPOINTS.atm, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         alert("Deposit successful");
         this.$router.push("/atmdashboard");
       } catch (error) {
         console.error("Error on deposit:", error.response?.data || error);
-        alert(error.response?.data || "Deposit failed");
+        alert(error.response?.data?.message || error.response?.data || "Deposit failed");
       }
     }
   }

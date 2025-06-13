@@ -10,8 +10,7 @@ export const API_ENDPOINTS = {
 
 
   // ATM endpoints
-  deposit: `${API_BASE_URL}/api/atm/deposit`,
-  withdraw: `${API_BASE_URL}/api/atm/withdraw`,
+  atm: `${API_BASE_URL}/api/transactions/atm`,
 
   // Employee endpoints
   usersByStatus: status => `${API_BASE_URL}/api/employees/status?status=${status}`,
