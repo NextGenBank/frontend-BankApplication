@@ -23,7 +23,11 @@ export default {
         iban: ""
       },
       loading: false,
-      debounceTimer: null
+      debounceTimer: null,
+      currentPage: 0,
+      pageSize: 10,
+      totalPages: 0,
+      totalElements: 0
     };
   },
   computed: {
@@ -65,6 +69,7 @@ export default {
     debouncedFetchTransactions() {
       clearTimeout(this.debounceTimer);
       this.debounceTimer = setTimeout(() => {
+        this.currentPage = 0;
         this.fetchTransactions();
       }, 300);
     },
@@ -78,23 +83,25 @@ export default {
       };
       this.selectedType = "ALL";
       this.searchQuery = "";
+      this.currentPage = 0;
+      this.fetchTransactions();
     },
     async fetchTransactions() {
       this.loading = true;
       try {
         const token = localStorage.getItem("token");
         const params = {
+          page: this.currentPage,
+          size: this.pageSize,
           iban: this.filters.iban || undefined,
           name: this.searchQuery || undefined,
           type: this.selectedType !== "ALL" ? this.selectedType : undefined,
-          accountNumber: this.filters.iban || undefined,
           startDate: this.filters.startDate || undefined,
           endDate: this.filters.endDate || undefined,
           amount: this.filters.amount ? parseFloat(this.filters.amount) : undefined,
           amountFilter: this.filters.amount ? this.filters.amountFilter : undefined
         };
 
-        // Clean undefined params
         Object.keys(params).forEach(key => params[key] === undefined && delete params[key]);
 
         const response = await axios.get("http://localhost:8080/api/transactions", {
@@ -102,7 +109,8 @@ export default {
           params
         });
 
-        this.transactions = response.data.map(tx => ({
+        const pageData = response.data;
+        this.transactions = pageData.content.map(tx => ({
           id: tx.transactionId,
           type: tx.transactionType,
           date: new Date(tx.timestamp).toLocaleString(),
@@ -113,6 +121,10 @@ export default {
           toName: tx.toName,
           direction: tx.direction
         }));
+
+        this.totalPages = pageData.totalPages;
+        this.totalElements = pageData.totalElements;
+
       } catch (error) {
         console.error("Error fetching transactions:", error);
       } finally {
@@ -125,11 +137,9 @@ export default {
 
 <template>
   <div class="container py-5">
-    <!-- Header with filters -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
       <h2 class="fw-bold mb-0">Transactions</h2>
       <div class="d-flex gap-3">
-        <!-- Name Filter -->
         <div class="input-group" style="max-width: 300px;">
           <input
             type="text"
@@ -139,7 +149,6 @@ export default {
           />
           <span class="input-group-text"><i class="bi bi-search"></i></span>
         </div>
-        <!-- Transaction Type Filter -->
         <select class="form-select" v-model="selectedType">
           <option value="ALL">All Types</option>
           <option value="INCOMING">Incoming</option>
@@ -149,7 +158,6 @@ export default {
       </div>
     </div>
 
-    <!-- Advanced Filters -->
     <div class="card mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h5 class="mb-0">Advanced Filters</h5>
@@ -163,7 +171,6 @@ export default {
       </div>
       <div class="card-body">
         <div class="row g-3">
-          <!-- Date Range -->
           <div class="col-md-6">
             <div class="row g-2">
               <div class="col">
@@ -184,8 +191,6 @@ export default {
               </div>
             </div>
           </div>
-          
-          <!-- Amount Filter -->
           <div class="col-md-6">
             <div class="row g-2">
               <div class="col-5">
@@ -209,8 +214,6 @@ export default {
               </div>
             </div>
           </div>
-          
-          <!-- IBAN Filter -->
           <div class="col-md-12">
             <label class="form-label">IBAN Filter</label>
             <input 
@@ -225,7 +228,6 @@ export default {
       </div>
     </div>
 
-    <!-- Loading Indicator -->
     <div v-if="loading" class="text-center my-4">
       <div class="spinner-border text-primary" role="status">
         <span class="visually-hidden">Loading...</span>
@@ -233,7 +235,6 @@ export default {
       <p class="mt-2">Loading transactions...</p>
     </div>
 
-    <!-- Table -->
     <div class="table-responsive" v-else>
       <table class="table table-hover align-middle">
         <thead class="table-light">
@@ -281,6 +282,23 @@ export default {
           </tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-between align-items-center mt-3">
+      <div>Page {{ currentPage + 1 }} of {{ totalPages }}</div>
+      <div>
+        <button class="btn btn-outline-primary btn-sm me-2"
+                :disabled="currentPage === 0"
+                @click="currentPage--; fetchTransactions()">
+          Previous
+        </button>
+        <button class="btn btn-outline-primary btn-sm"
+                :disabled="currentPage >= totalPages - 1"
+                @click="currentPage++; fetchTransactions()">
+          Next
+        </button>
+      </div>
     </div>
   </div>
 </template>
