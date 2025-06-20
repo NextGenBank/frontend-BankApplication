@@ -41,8 +41,7 @@ const fields = [
   { label: 'Password', placeholder: 'Enter your Password', type: 'password', model: 'password' },
   { label: 'Confirm password', placeholder: 'Confirm password', type: 'password', model: 'confirmPassword' },
   { label: 'BSN', placeholder: 'Enter your BSN', type: 'text', model: 'bsn' },
-  { label: 'Phone number', placeholder: 'Enter your phone number', type: 'text', model: 'phone' },
-  { label: 'Transfer limit', placeholder: 'Enter transfer limit', type: 'number', model: 'transferLimit' }
+  { label: 'Phone number', placeholder: 'Enter your phone number', type: 'text', model: 'phone' }
 ]
 
 const formData = ref({
@@ -52,8 +51,7 @@ const formData = ref({
   password: '',
   confirmPassword: '',
   bsn: '',
-  phone: '',
-  transferLimit: ''
+  phone: ''
 })
 
 const successMessage = ref('')
@@ -97,8 +95,7 @@ async function submitCreateAccount() {
       password: '',
       confirmPassword: '',
       bsn: '',
-      phone: '',
-      transferLimit: ''
+      phone: ''
     }
     
     // Redirect to pending tab after 2 seconds

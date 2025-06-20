@@ -61,7 +61,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useUserStore } from '../stores/user'
 import Sidebar from '@/components/EmployeeSidebar.vue'
 import axios from 'axios'
@@ -69,40 +69,78 @@ import axios from 'axios'
 const userStore = useUserStore()
 const user = computed(() => userStore.user)
 
+// Get the actual user ID if logged in
+const initiatorId = computed(() => {
+  return user.value && user.value.userId ? user.value.userId : 1
+})
+
 const transferData = ref({
   accountNumber: '',  // source account IBAN
   toAccount: '',     // destination account IBAN
   amount: '',
   description: '',
-  initiatorId: 1     // Default to first employee (ID: 1) for demo purposes
+  initiatorId: initiatorId.value
 })
 
 const successMessage = ref('')
 const errorMessage = ref('')
+
+// Update initiatorId when user is loaded
+onMounted(() => {
+  if (user.value && user.value.userId) {
+    transferData.value.initiatorId = user.value.userId
+  }
+})
 
 async function submitTransfer() {
   // Reset messages
   successMessage.value = ''
   errorMessage.value = ''
   
-  // Use the default initiator ID (1) since we don't have login yet
+  // Ensure initiator ID is set correctly
+  transferData.value.initiatorId = initiatorId.value
+  
   console.log('Transfer data:', transferData.value)
   
   try {
-    const response = await axios.post('/api/employees/transfer', transferData.value)
-    successMessage.value = response.data.message || 'Transfer completed successfully'
+    // Make sure amount is valid
+    if (!transferData.value.amount || isNaN(parseFloat(transferData.value.amount)) || parseFloat(transferData.value.amount) <= 0) {
+      throw new Error('Please enter a valid positive amount')
+    }
     
-    // Reset form
-    transferData.value = {
-      accountNumber: '',
-      toAccount: '',
-      amount: '',
-      description: '',
-      initiatorId: 1  // Keep the default employee ID
+    // Make sure account numbers are provided
+    if (!transferData.value.accountNumber || !transferData.value.toAccount) {
+      throw new Error('Please enter both source and destination account numbers')
+    }
+    
+    const response = await axios.post('/api/employees/transfer', transferData.value)
+    
+    // Handle the more structured response
+    if (response.data && response.status === 200) {
+      successMessage.value = 'Transfer completed successfully'
+      
+      // Reset form
+      transferData.value = {
+        accountNumber: '',
+        toAccount: '',
+        amount: '',
+        description: '',
+        initiatorId: initiatorId.value
+      }
     }
   } catch (error) {
-    errorMessage.value = error.response?.data?.error || 'Failed to complete transfer'
     console.error('Failed to transfer', error)
+    
+    // Handle the more structured error response
+    if (error.response && error.response.data) {
+      if (error.response.data.message) {
+        errorMessage.value = error.response.data.message
+      } else {
+        errorMessage.value = 'Failed to complete transfer: ' + (error.response.data.error || error.message)
+      }
+    } else {
+      errorMessage.value = 'Failed to complete transfer: ' + error.message
+    }
   }
 }
 </script>
