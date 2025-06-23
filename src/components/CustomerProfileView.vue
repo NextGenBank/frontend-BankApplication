@@ -62,6 +62,13 @@ export default {
                         </button>
                     </router-link>
                 </div>
+                <div class="mt-4 text-end">
+                    <router-link to="/CustomerTransferToIbanForm">
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded">
+                            Transfer External Funds
+                        </button>
+                    </router-link>
+                </div>
             </div>
 
         </div>
