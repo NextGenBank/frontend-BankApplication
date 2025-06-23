@@ -1,4 +1,3 @@
-<!-- src/components/ATM/Withdraw.vue -->
 <template>
   <div class="card p-4" style="width: 360px; margin: 0 auto; margin-top: 50px;">
     <h2 class="text-success mb-4">Withdraw</h2>
@@ -26,7 +25,7 @@ import { API_ENDPOINTS } from "@/config";
 export default {
   data() {
     return {
-      accounts: [],   // сюда загрузятся объекты { accountType, balance, iban } с бэка
+      accounts: [],
       account: "",
       amount: null,
     };
@@ -39,7 +38,7 @@ export default {
       });
       this.accounts = response.data;
     } catch (error) {
-      console.error("Не удалось загрузить счета:", error);
+      console.error("Couldn't load the balance:", error);
       alert("Error loading accounts. Please try again.");
     }
   },
@@ -48,7 +47,6 @@ export default {
       if (!this.account || !this.amount) {
         return alert("Please select account and enter amount");
       }
-      
       this.$router.push({
         path: '/atmwithdraw-bills',
         query: {

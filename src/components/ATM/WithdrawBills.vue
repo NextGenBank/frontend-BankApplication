@@ -1,4 +1,3 @@
-<!-- src/components/ATM/WithdrawBills.vue -->
 <template>
   <div class="card p-4" style="width: 360px; margin: 0 auto; margin-top: 50px;">
     <h2 class="text-success mb-4">Select Bills</h2>
@@ -28,11 +27,10 @@ export default {
     return {
       amount: 0,
       bills: null,
-      account: "" 
+      account: ""
     };
   },
   created() {
-    // Получаем amount и account из query-параметров
     this.amount = this.$route.query.amount || 0;
     this.account = this.$route.query.account || "";
   },
@@ -44,18 +42,19 @@ export default {
       try {
         const token = localStorage.getItem("token");
         const payload = {
+          transactionType: "WITHDRAWAL",
           fromIban: this.account,
           amount: parseFloat(this.amount),
           bills: parseInt(this.bills)
         };
-        await axios.post(API_ENDPOINTS.withdraw, payload, {
+        await axios.post(API_ENDPOINTS.atm, payload, {
           headers: { Authorization: `Bearer ${token}` }
         });
         alert("Withdraw successful");
         this.$router.push("/atmdashboard");
       } catch (error) {
         console.error("Error on withdraw:", error.response?.data || error);
-        alert(error.response?.data || "Withdraw failed");
+        alert(error.response?.data?.message || error.response?.data || "Withdraw failed");
       }
     }
   }
