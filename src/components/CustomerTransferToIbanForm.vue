@@ -1,75 +1,122 @@
 <script>
 import axios from 'axios'
-import { API_ENDPOINTS } from '@/config.js'
+import { API_ENDPOINTS } from '@/config'
 
 export default {
     data() {
         return {
-            form: { toIban: '', amount: null },
+            form: {
+                toAccount: '',
+                amount: null
+            },
+            userIban: null,
+            initiatorId: null,
             message: '',
             success: false
         }
     },
     methods: {
-        reset() {
-            this.form.toIban = ''
-            this.form.amount = null
-        },
-        async submit() {
+        async fetchUserData() {
             try {
-                const resp = await axios.post(
-                    `${API_ENDPOINTS.switchFunds().replace('/switch', '/transfer')}`,
-                    {
-                        fromIban: this.form.fromIban,
-                        toIban: this.form.toIban,
-                        amount: this.form.amount,
-                    },
-                    {
-                        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+                const resp = await axios.get(API_ENDPOINTS.currentUser, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
                     }
-                )
-                this.message = 'Transfer successful!'
-                this.success = true
-                this.reset()
+                })
+
+                const user = resp.data
+                this.initiatorId = user.userId
+
+                // fetch accounts to get the CHECKING IBAN
+                const accountsResp = await axios.get(API_ENDPOINTS.myAccounts, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+
+                const checkingAccount = accountsResp.data.find(acc => acc.accountType === 'CHECKING')
+                if (checkingAccount) {
+                    this.userIban = checkingAccount.iban
+                } else {
+                    this.message = 'No checking account found.'
+                    this.success = false
+                }
+
             } catch (err) {
-                this.message = err.response?.data?.error || err.response?.data?.message || 'Transfer failed.'
+                this.message = 'Failed to load user account.'
                 this.success = false
             }
+        },
+        async submitTransfer() {
+            this.message = ''
+            this.success = false
+
+            try {
+                const payload = {
+                    accountNumber: this.userIban,
+                    toAccount: this.form.toAccount,
+                    amount: this.form.amount,
+                    initiatorId: this.initiatorId
+                }
+
+                const resp = await axios.post(API_ENDPOINTS.transfer(), payload, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+
+                this.message = resp.data.message || 'Transfer completed successfully.'
+                this.success = true
+                this.resetForm()
+            } catch (err) {
+                this.message =
+                    err.response?.data?.error ||
+                    err.response?.data?.message ||
+                    'Transfer failed.'
+                this.success = false
+            }
+        },
+        resetForm() {
+            this.form.toAccount = ''
+            this.form.amount = null
         }
+    },
+    mounted() {
+        this.fetchUserData()
     }
 }
 </script>
 
 <template>
-    <div class="p-6 rounded shadow bg-white max-w-md mx-auto">
-        <h2 class="text-xl font-semibold mb-4 text-center">Transfer To Another IBAN</h2>
+    <div class="max-w-md mx-auto bg-white rounded-2xl shadow p-6 space-y-4">
+        <h2 class="text-xl font-semibold text-center">Transfer to External IBAN</h2>
 
-        <form @submit.prevent="submit">
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-medium">From (Checking):</label>
-                    <input type="text" disabled value="Your Checking Account"
-                        class="mt-1 block w-full rounded border px-3 py-2 bg-gray-100">
-                </div>
-                <div>
-                    <label for="toIban" class="block text-sm font-medium">To IBAN</label>
-                    <input v-model="form.toIban" id="toIban" type="text" required
-                        class="mt-1 block w-full rounded border px-3 py-2" />
-                </div>
-                <div>
-                    <label for="amount" class="block text-sm font-medium">Amount (€)</label>
-                    <input v-model.number="form.amount" id="amount" type="number" min="0.01" step="0.01" required
-                        class="mt-1 block w-full rounded border px-3 py-2" />
-                </div>
+        <div v-if="userIban" class="text-sm text-gray-600 text-center">
+            Your IBAN (from): <strong>{{ userIban }}</strong>
+        </div>
+
+        <form @submit.prevent="submitTransfer" class="space-y-4 mt-4">
+            <div>
+                <label class="block text-sm font-medium">Recipient IBAN</label>
+                <input v-model="form.toAccount" type="text" placeholder="Enter destination IBAN"
+                    class="w-full mt-1 px-4 py-2 border rounded" required />
             </div>
 
-            <div class="mt-6 flex justify-end gap-4">
-                <button type="button" @click="reset" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Send</button>
+            <div>
+                <label class="block text-sm font-medium">Amount</label>
+                <input v-model.number="form.amount" type="number" min="0.01" step="0.01" placeholder="Enter amount"
+                    class="w-full mt-1 px-4 py-2 border rounded" required />
+            </div>
+
+            <div class="flex justify-end gap-4 mt-6">
+                <button type="button" @click="resetForm" class="px-4 py-2 bg-gray-200 rounded">Cancel</button>
+                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                    Transfer
+                </button>
             </div>
         </form>
 
-        <div v-if="message" :class="success ? 'text-green-600 text-center' : 'text-red-600 text-center'" class="mt-4">
+        <div v-if="message" :class="success ? 'text-green-600' : 'text-red-600'" class="text-center mt-4">
             {{ message }}
         </div>
     </div>
