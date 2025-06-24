@@ -1,6 +1,7 @@
 {
   "name": "vue-user-account-form",
   "version": "1.0.0",
+  "homepage": "https://nextgenbank.github.io/frontend-BankApplication",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
