@@ -109,10 +109,13 @@ export default {
       } catch (err) {
         if (err.response?.status === 400 && err.response.data) {
           const data = err.response.data;
-          if (typeof data === "object") {
-            this.errors = data;
+
+          if (typeof data === "object" && data.error) {
+            this.error = data.error; // example: { error: "Email already registered" }
+          } else if (typeof data === "object") {
+            this.errors = data; // validation errors
           } else {
-            this.error = data;
+            this.error = data; // fallback
           }
         } else {
           this.error = "Authentication error";
